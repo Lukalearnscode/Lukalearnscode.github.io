@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>memoQ Tag Transfer — Luka</title>
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+
+  <div class="container">
+
+    <header>
+      <nav>
+        <a href="../index.html" class="site-name">Luka</a>
+        <a href="../posts/index.html">Posts</a>
+        <a href="index.html">Projects</a>
+      </nav>
+    </header>
+
+    <div class="single-header">
+      <h1>memoQ Tag Transfer</h1>
+    </div>
+
+    <div class="single-content">
+
+      <p>A command-line tool that restores inline formatting tags to translated
+      text — and, more to the point, proves they landed on the right words.
+      Open source, MIT licensed.</p>
+
+      <p><a href="https://github.com/Lukalearnscode/memoq-tag-transfer">github.com/Lukalearnscode/memoq-tag-transfer</a></p>
+
+      <h2>The problem</h2>
+
+      <p>Game and software text is full of inline markup: a colour around a
+      damage number, a link around a place name, a style span around one word in
+      a sentence. Translation tools strip that markup out so the translator sees
+      clean text, and it has to be put back afterwards.</p>
+
+      <p>Putting it back is deceptively hard. Word order changes between
+      languages, so a tag that wrapped the third word in English might need to
+      wrap the seventh in Chinese. Do it by hand across a few thousand segments
+      and you will misplace some. You will not know which ones.</p>
+
+      <pre>Source:  消耗 {green}40{/green} 点能量     ← the tag marks "40" as green
+Target:  Consumes 40 Energy                ← markup gone after translation
+Result:  Consumes {green}40{/green} Energy  ← restored automatically</pre>
+
+      <h2>How it works</h2>
+
+      <p>Unzip the memoQ file and read its XML. Classify every inline tag by
+      type. Replace tags with numbered placeholders, hand the source and the
+      plain translation to a language model, and let it insert the placeholders
+      where they belong. Then verify, then write a TMX file for import back into
+      memoQ.</p>
+
+      <p>Writing directly back into the original file format was the obvious
+      approach and it was a dead end — ZIP structure, XML serialisation,
+      namespace pollution, and CDATA handling each break memoQ compatibility in
+      ways that produce a file which opens fine and is quietly wrong. TMX plus
+      a local translation memory plus pre-translate is the path that survives
+      contact with the actual software.</p>
+
+      <h2>The part that turned out to be hard</h2>
+
+      <p>Placement was not the hard problem. Verification was.</p>
+
+      <p>The easy checks are counting and comparison: the target must have the
+      same number of tags as the source, the same tag content, legal nesting,
+      consistent order for structural tags. All of that is mechanical and the
+      tool does it segment by segment.</p>
+
+      <p>The check that matters is the one those cannot express. Every count can
+      match, every tag can be present, nesting can be legal, order can be
+      identical — and the tags can still be wrapped around the wrong words. The
+      source colours a number; the target colours a verb. Nothing mechanical
+      fires. The file passes and ships broken.</p>
+
+      <p>So the tool also emits a side-by-side table of what each tag pair
+      actually wraps in source versus target, flags mismatched numbers
+      automatically, and leaves the rest for a human to scan. It does not
+      pretend to judge meaning. It makes the judgement cheap to perform.</p>
+
+      <h2>What I got wrong along the way</h2>
+
+      <p>The number-mismatch warning was originally written as a regular
+      expression matching digits and periods. English periods and ellipses are
+      made of periods. On a real file with 525 tags it produced 116 false
+      warnings, all of them from sentences like <em>"Wait... what?"</em> — and a
+      detector that cries wolf 116 times is worse than no detector, because
+      after the twentieth false alarm nobody reads the twenty-first.</p>
+
+      <p>Each regression test in the repository exists because a bug like that
+      one reached a real file first. They were not written for coverage.</p>
+
+      <h2>Stack</h2>
+
+      <p>Python, lxml for XML parsing, any OpenAI-compatible model for
+      placement. No framework. Runs from one command.</p>
+
+    </div>
+
+    <a href="index.html" class="back-link">← Back to Projects</a>
+
+    <footer>
+      <p>Luka</p>
+    </footer>
+
+  </div>
+
+</body>
+</html>

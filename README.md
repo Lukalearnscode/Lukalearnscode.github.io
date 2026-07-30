@@ -10,12 +10,14 @@ luka-site/
 ├── style.css               ← All styles (Cormorant Garamond)
 ├── README.md
 ├── posts/
-│   ├── index.html          ← Posts list
-│   └── example-post.html   ← Example (delete when ready)
+│   └── index.html          ← Posts list (empty for now)
 └── projects/
     ├── index.html          ← Projects list
-    └── example-project.html ← Example (delete when ready)
+    └── memoq-tag-transfer.html
 ```
+
+The starter example pages were removed once real content landed. Each list page
+keeps a commented-out `<!-- TEMPLATE ... -->` block to copy for the next entry.
 
 ## Deploy to GitHub Pages
 
@@ -49,7 +51,8 @@ Click Save. Your site will be live at `https://yourusername.github.io` within a 
 
 ## Adding a new post
 
-1. Copy `posts/example-post.html` → `posts/your-post-name.html`
+1. Copy `projects/memoq-tag-transfer.html` → `posts/your-post-name.html` as a
+   starting skeleton (same header/nav/footer structure), or reuse any existing page
 2. Edit the title, date, reading time, and content
 3. Add a new entry in `posts/index.html`:
 
