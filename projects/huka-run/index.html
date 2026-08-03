@@ -22,8 +22,27 @@
         transition: opacity .5s ease; z-index: 10;
       }
       #boot.gone { opacity: 0; pointer-events: none; }
+      /* The first click is both the game's start action and the browser's
+         required audio gesture. */
+      #start-screen {
+        position: absolute; inset: 0; display: grid; place-items: center;
+        padding: 24px; z-index: 8; color: #f4fbff;
+        background: radial-gradient(circle at 50% 42%, rgba(8, 91, 112, .18), rgba(2, 11, 27, .72) 60%, rgba(2, 7, 18, .9));
+        transition: opacity .35s ease, visibility .35s ease;
+      }
+      #start-screen.gone { opacity: 0; visibility: hidden; pointer-events: none; }
+      .start-card { text-align: center; text-shadow: 0 3px 24px rgba(0,0,0,.5); }
+      .start-kicker { color: #8ce9ed; font-size: 12px; font-weight: 800; letter-spacing: .32em; text-transform: uppercase; }
+      .start-card h1 { margin: 12px 0 20px; font-size: clamp(38px, 7vw, 78px); line-height: .9; letter-spacing: .08em; font-weight: 900; }
+      #start-button {
+        border: 1px solid rgba(140, 233, 237, .9); border-radius: 999px; padding: 14px 28px;
+        color: #061024; background: #b9fbf4; cursor: pointer; font: 800 13px/1 ui-sans-serif, system-ui, sans-serif;
+        letter-spacing: .18em; box-shadow: 0 10px 38px rgba(0, 255, 236, .2); transition: transform .15s ease, background .15s ease;
+      }
+      #start-button:hover { transform: translateY(-2px); background: #e4fffb; }
+      .start-help { margin-top: 18px; color: rgba(232, 247, 255, .72); font-size: 11px; letter-spacing: .08em; }
     </style>
-    <script type="module" crossorigin src="./assets/index-YfXKSmtp.js"></script>
+    <script type="module" crossorigin src="./assets/index-DdupMZgd.js"></script>
     <link rel="modulepreload" crossorigin href="./assets/three-DMZcnpyd.js">
   </head>
   <body>
@@ -31,6 +50,14 @@
       <canvas id="gl"></canvas>
       <canvas id="hud"></canvas>
       <div id="boot">Huka Run</div>
+      <div id="start-screen" role="dialog" aria-label="Start Huka Run">
+        <div class="start-card">
+          <div class="start-kicker">Huka Falls · River Sprint</div>
+          <h1>HUKA RUN</h1>
+          <button id="start-button" type="button">CLICK TO START</button>
+          <div class="start-help">W A S D / ARROWS · SHIFT BOOST · C DRIFT</div>
+        </div>
+      </div>
     </div>
   </body>
 </html>
