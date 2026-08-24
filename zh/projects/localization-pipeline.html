@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>译制工坊 — Luka</title>
+  <link rel="stylesheet" href="../../style.css">
+  <link rel="alternate" hreflang="zh-CN" href="https://lukalearnscode.github.io/zh/projects/localization-pipeline.html">
+  <link rel="alternate" hreflang="en" href="https://lukalearnscode.github.io/projects/localization-pipeline.html">
+  <style>
+    /* Scoped to this page only. Global style.css untouched. Colours reuse the site palette variables. */
+    .phase-list { margin: 1.6rem 0 2rem; border-top: 1px solid var(--border); }
+    .phase-row { display: flex; gap: 1.1rem; padding: 0.8rem 0; border-bottom: 1px solid var(--border); }
+    .phase-num { flex: 0 0 1.8rem; font-style: italic; font-weight: 700; color: var(--hover); font-size: 1.2rem; line-height: 1.4; }
+    .phase-body { flex: 1; }
+    .phase-name { font-weight: 700; font-size: 1.08rem; }
+    .phase-out { font-size: 0.95rem; color: var(--dim); line-height: 1.6; }
+    .stage-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(185px, 1fr)); gap: 0.9rem; margin: 1.6rem 0 2rem; }
+    .stage-card { border: 1px solid var(--border); border-radius: 3px; padding: 1rem 1.1rem; background: rgba(0,0,0,0.02); }
+    .stage-card .stage-tag { font-size: 0.85rem; font-style: italic; color: var(--hover); }
+    .stage-card h4 { font-size: 1.1rem; font-weight: 700; margin: 0.15rem 0 0.45rem; }
+    .single-content .stage-card p { font-size: 0.97rem; line-height: 1.6; margin-bottom: 0.5rem; color: var(--dim); }
+    .single-content .stage-card p:last-child { margin-bottom: 0; }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+
+    <header>
+      <nav>
+        <a href="../index.html" class="site-name">Luka</a>
+        <a href="../posts/index.html">文章</a>
+        <a href="index.html">项目</a>
+        <span class="lang-switch"><a href="../../projects/localization-pipeline.html" lang="en">EN</a> / <span class="current">中文</span></span>
+      </nav>
+    </header>
+
+    <div class="single-header">
+      <h1>译制工坊</h1>
+    </div>
+
+    <div class="single-content">
+
+      <p>一间用 AI 做翻译的工坊，专做中英互译的游戏和创意文本。它是我自己
+      设计的，接的是真实的客户项目，哪里出了问题，我就重造哪里。它不开源，
+      因为它不是一个软件产品，而是一套贴着我个人工作方式长出来的干活系统。
+      所以这一页做的事，和开源正相反：把设计摊开，一块一块讲清楚，每一块
+      是干什么的，为什么要有它。</p>
+
+      <p>先把结论放在这里：让 AI 从头到尾一口气把稿子翻完，你拿到的会是一份
+      读起来很顺、但藏着一批无声错误的译文。这间工坊里的每个环节，都对应着
+      「顺畅的译文」出错的某一种具体方式。</p>
+
+      <h2>要解决的问题</h2>
+
+      <p>AI 翻译的毛病，早就不是翻得生硬了，现在的 AI 文笔很顺。真正的毛病藏在
+      「顺」底下：悄悄丢掉半句话，悄悄多出一层原文没有的意思，同一个角色的
+      名字，第一章翻成一个样，第九章又换了个样。每一段单独看都挑不出错，
+      错误藏在段与段之间，藏在译文和读者永远见不到的原文之间。</p>
+
+      <p>更麻烦的是，你问 AI「刚才翻得好不好」，它会说好。让 AI 检查自己的作业
+      基本没用，它只会把自己的习惯再夸一遍。所以这件事真正难的地方不是翻译，
+      而是验证：工坊里每个环节说起话来都底气十足，你怎么才能拿到关于质量的
+      诚实证据？</p>
+
+      <p>这间工坊的答案分三层：把工作切成一道道工序，每道工序都留下查得到的
+      凭据；审校交给几个互不通气的 AI，谁也看不见谁的想法；在 AI 和「完工」
+      两个字之间，设一道不讲情面的机器检查。</p>
+
+      <h2>设计思路一：规则不写死，按项目现场定制</h2>
+
+      <p>游戏界面上的按钮文字、法律合同里的条款、一句打情骂俏的台词，各自需要
+      的翻译规矩完全不同；中翻英和英翻中，规矩也不是简单对调。要是把所有规矩
+      塞进一份几千行的万能说明书，每个项目真正用得上的只有其中三十行，AI 读着
+      是干扰，我改起来是灾难。</p>
+
+      <p>所以这套系统存的不是翻译规则，而是「怎么给项目定规则」的方法。每接
+      一个项目，先做分析：这是什么类型的文本，给谁看的，往哪个方向翻，说话是
+      什么口吻，有哪些专有名词，风险在哪。然后照着分析结果，给这个项目现场编
+      一份专属的工作指令，用不上的规则由程序自动删掉，不留在里面分散 AI 的
+      注意力。这套系统的本事，就是让「每个项目都量身定制一套规则」变成一件
+      不费事的事。</p>
+
+      <h2>工坊全貌：九道工序</h2>
+
+      <p>一条线走完：读文件，摸清项目，定规则，翻译，三道审校，放回格式标记，
+      全文体检，交付，最后把这一单踩过的坑记进系统。每道工序都有「完工标准」，
+      哪些文件必须存在、哪些检查必须通过，全部由程序核验，不听 AI 自己说
+      做完了。</p>
+
+      <div class="phase-list">
+        <div class="phase-row">
+          <div class="phase-num">0</div>
+          <div class="phase-body">
+            <div class="phase-name">读文件</div>
+            <div class="phase-out">把客户文件拆开，登记成一份不可再改的底账：每段文字的编号、顺序、格式标记、说话人。后面所有检查都以这份底账为准。体检也在这一步做：翻译软件有没有把一句话切成两半？文件里有没有上一轮编辑留下的残渣？</div>
+          </div>
+        </div>
+        <div class="phase-row">
+          <div class="phase-num">1</div>
+          <div class="phase-body">
+            <div class="phase-name">分析与分诊</div>
+            <div class="phase-out">这是什么活？新翻译、审校别人的稿子，还是客户的试译考核？什么题材，翻给谁看，风险多高？哪个 AI 出草稿、哪个 AI 来审？结论写成一张项目档案。重复的句子也在动笔前先扫出来，免得同一句话翻两遍、翻两样。</div>
+          </div>
+        </div>
+        <div class="phase-row">
+          <div class="phase-num">2</div>
+          <div class="phase-body">
+            <div class="phase-name">定制工作指令</div>
+            <div class="phase-out">照着分析结果，编三份指令：草译一份，盲审一份，终审一份。跟这个项目无关的规则，由程序自动剔掉。</div>
+          </div>
+        </div>
+        <div class="phase-row">
+          <div class="phase-num">3</div>
+          <div class="phase-body">
+            <div class="phase-name">翻译</div>
+            <div class="phase-out">稿子分批翻，一场对话、一个场景绝不从中间切开；上一批的剧情要点会捎给下一批。每批走三步：先读懂，再翻译，最后润色，过程稿全部存档。翻完由程序清点：进来多少段，出去多少段，一段都不能少。</div>
+          </div>
+        </div>
+        <div class="phase-row">
+          <div class="phase-num">4</div>
+          <div class="phase-body">
+            <div class="phase-name">三道审校</div>
+            <div class="phase-out">整套系统的心脏：机器预检，盲审，对照原文终审。下文单独展开。</div>
+          </div>
+        </div>
+        <div class="phase-row">
+          <div class="phase-num">5</div>
+          <div class="phase-body">
+            <div class="phase-name">放回格式标记</div>
+            <div class="phase-out">游戏文字里藏着看不见的标记，比如让数字显示成绿色、让地名可以点击。翻译时这些标记会被摘掉，这一步把它们放回译文，再逐个验证有没有放对位置。这层功能后来长成了独立的开源工具 memoQ Tag Transfer。</div>
+          </div>
+        </div>
+        <div class="phase-row">
+          <div class="phase-num">6</div>
+          <div class="phase-body">
+            <div class="phase-name">全文体检</div>
+            <div class="phase-out">专查逐段审稿天生看不见的毛病：译文里混没混进另一种语言的标点，引号样式通篇是否统一，专有名词有没有越翻越走样，数字日期对不对，原文有没有漏删的残留。体检报告跟稿子的「指纹」绑在一起，稿子改一个字，指纹就变，旧报告立刻作废。</div>
+          </div>
+        </div>
+        <div class="phase-row">
+          <div class="phase-num">7</div>
+          <div class="phase-body">
+            <div class="phase-name">交付</div>
+            <div class="phase-out">只有一道闸，一条命令。它把前面所有检查亲自重新跑一遍，不翻旧报告；闸不放行，稿子出不了门。交付什么格式，跟着客户的工作流程走。</div>
+          </div>
+        </div>
+        <div class="phase-row">
+          <div class="phase-num">8</div>
+          <div class="phase-body">
+            <div class="phase-name">记账与成长</div>
+            <div class="phase-out">凡是拖到后期才发现的错，都要问一句：这是这单特有的，还是普遍规律？前者记进这个客户的档案，后者先进观察名单，由我确认后才写进长期规则。这间工坊的设定是：每做完一单，都得比上一单强一点。</div>
+          </div>
+        </div>
+      </div>
+
+      <h2>心脏：三道审校</h2>
+
+      <p>大多数翻译质量体系，最弱的一环恰恰是审校：只有一个审稿人，什么材料都
+      给他看，还全盘信任他的判断。这间工坊反着来，刻意控制每个审稿方能看到
+      什么。</p>
+
+      <div class="stage-grid">
+        <div class="stage-card">
+          <div class="stage-tag">第一道</div>
+          <h4>机器预检</h4>
+          <p>只用程序，不用 AI。标记数量、专有名词、标点、前后一致性、以前踩过的坑，挨个清点一遍。</p>
+          <p>能看到：一切数得清的东西。</p>
+        </div>
+        <div class="stage-card">
+          <div class="stage-tag">第二道</div>
+          <h4>盲审</h4>
+          <p>换一家公司的另一款 AI，不给原文，只读译文，坐在玩家和读者的位子上挑毛病。只提意见，不动稿子。</p>
+          <p>能看到：只有译文。</p>
+        </div>
+        <div class="stage-card">
+          <div class="stage-tag">第三道</div>
+          <h4>对照终审</h4>
+          <p>对着原文通读全文，把盲审的意见一条条裁决完，然后放行，或者拦下。</p>
+          <p>能看到：原文、译文，加全部检查记录。</p>
+        </div>
+      </div>
+
+      <p><strong>第一道，机器预检。</strong>这套系统有条铁律：凡是本质上属于
+      「数数」的活，一律由程序出结论，绝不交给 AI。AI 会数错，而且错得理直
+      气壮。所以标记、数字、专有名词、标点这些，全交给程序清点，清点结果当作
+      板上钉钉的事实，写进后面的审校指令。人和 AI 的注意力，省下来用在程序
+      管不了的地方。</p>
+
+      <p><strong>第二道，盲审。</strong>盲审的读法，就是玩家拿到游戏后的读法：
+      手边没有原文可对照。这种隔离是物理上的，不是口头承诺：盲审在一个从没
+      见过原文的全新对话里进行。这里有两条硬规则。第一，盲审必须换一家公司的
+      另一款 AI。让 AI 重读自己翻的东西，它一定会放过自己的习惯；换个身份
+      设定、换套说辞，都不算换 AI，这一条有程序盯着，违反就过不了关。第二，
+      盲审只能提意见，不能改稿。它可以说某句读着别扭，但它碰不着稿子。</p>
+
+      <p><strong>第三道，对照终审。</strong>终审什么都看得到：原文、译文、
+      机器报告、全部盲审意见。它逐条裁决每一条意见，再对着原文把全文重读
+      一遍。这一层守着两条纪律，每条背后都是真实翻过的车。其一，只管意思，
+      不管句式：意思多了、少了、拧了的，拦下；但不许打着「忠实原文」的旗号，
+      把已经很自然的译文硬改回原文的句子结构。其二，问题和改法分开判：一条
+      意见给出的改法不行，不代表它指出的问题不存在。不做这个区分，本来成立
+      的问题就会跟着那个不合格的改法，一起被悄悄扔掉。</p>
+
+      <h2>设计思路二：AI 说的话不算数</h2>
+
+      <p>一个刚干完活的 AI，你问它「做规范了吗」，它想都不想就答做规范了，
+      毕竟还在同一场对话里。AI 给自己打的分，天生偏高。所以「放行」这件事，
+      我把它整个搬到了 AI 外面：</p>
+
+      <p>每道工序都必须留下凭据。每个项目固定五份记录文件，记着原文底账、
+      译文、每一条审校裁决、每一项检查结果。一个独立的核对程序给这五份文件
+      对账：段落必须一段不差，每条盲审意见必须有裁决，每项声称做过的检查必须
+      拿得出真实记录。交付前，最后那道闸还会在即将出门的那一版稿子上，把所有
+      检查亲自重跑一遍，检查结果跟这一版稿子的指纹绑死。上周的稿子拿到的
+      合格证，对今天这版一文不值。</p>
+
+      <p>有一条不对称的规则，是我的心头好：<em>没做不算罪，谎报才算。</em>
+      某项检查没做，记录里也没说做过，闸会把它标出来，活照常干，明明白白。
+      可要是记录里声称检查做过，凭据却拿不出来，直接判不合格。这条规则瞄准
+      的，是 AI 真实的毛病：它不偷懒，它只是把话说得太满。</p>
+
+      <h2>设计思路三：工坊得会长进</h2>
+
+      <p>要是只许留一道工序，我留最后那道。每单收尾，把拖到后期才暴露的错
+      挨个过堂：只对这家客户有用的，记进客户档案；有普遍价值的，先当「候选
+      经验」放进观察名单，我确认过才允许写进长期规则。为一个奇葩项目定下的
+      应急招数，不该永久留在系统里。</p>
+
+      <p>最深刻的教训不停留在纸面上，直接变成程序：漏过一次的错误，进「已知
+      病灶库」，从此每一单都自动复查这一项，同一个坑不可能摔第二次。这间
+      工坊现在还得定期考试：拿公开发行游戏的官方双语文本，人为埋进错误当
+      考卷，看它能抓回几个。目前的成绩：42 段的卷子埋了 12 个错，修正记分
+      口径后抓回 11 个。考试制度里有一条，听着偏执，其实一点不偏执：看过
+      答案的，永远没资格再当考生。泄题这种事，从来不会自己跳出来告诉你。</p>
+
+      <h2>效果怎么样？</h2>
+
+      <p>做过两次盲测，对手是已经正式上线的专业译文。比赛全程不看参考答案，
+      打完分才拆封：</p>
+
+      <p>中翻英，一款 Steam 上发行的国产文字冒险游戏：这间工坊的译文和官方
+      英文版打了个平手（七个维度加权打分，8.30 对 8.25）。英翻中，一本已出版
+      的科技人物传记，对照书店里能买到的中译本：整体质量相当，各有各赢的
+      地方。</p>
+
+      <p>两次测出来的格局是一致的，说出来也不丢人：这套系统赢下限，输上限。
+      论一句不漏、名词前后统一、没有语法硬伤，它比已上线的人工译本更稳，
+      两次盲测都抓到过官方版本真实存在的漏译和语法错误。但论母语高手笔下的
+      活气，比如一个小孩角色说话时的那点童趣，它还差一口气。这个格局不是
+      意外，本来就是这么设计的：审校层的职责，是把下限焊死。上限是另一条路，
+      靠攒好范文、一句多译挑最好的去冲，那条路明摆着还没走完。</p>
+
+      <h2>一路上栽过的跟头</h2>
+
+      <p><strong>纸面护栏。</strong>有条保护措施是这么设计的：长稿子必须切成
+      小批喂给 AI，免得它顾头不顾尾。这条写进了文档，程序也写好了，可就是没
+      接进真正干活的流程。结果整整几个星期，稿子都是整篇一次性塞给 AI 的，
+      而且全程没有任何报错。从那以后立了规矩：一条保护措施，只有真的在干活
+      的路径上、而且你亲眼见它拦下过东西，才算存在。现在每装一条新检查，
+      都要先故意制造一个错误，亲眼看着它报警，才算装上了。</p>
+
+      <p><strong>破折号事故。</strong>英翻中翻一章书稿，AI 在 38 段里的 13 段
+      悄悄加上了中文破折号，原文里一个都没有。三道审校全部放行，每一道都在
+      忙着看更「重要」的东西。最后是怎么发现的？一位真人读者觉得某一段读着
+      有点别扭。修复方式不是「下次注意」，而是把它变成机器规则：原文和译文
+      的破折号各数一遍，对不上就报警。规则写好当天扫出 15 段，清完归零。
+      人的一句「这里怪怪的」，常常就是系统性毛病的入口，要做的是把这种感觉
+      翻译成一条检查规则。</p>
+
+      <p><strong>悄悄失效的检查器。</strong>检查器自己也会坏，而且坏的时候
+      不吭声。我出过这样的事：警报器本身测起来完好，可接警报器的线早就被
+      拔了；还有判断标准定得太松的：本该核对一整句话的检查，随便一个表格
+      标题就能蒙混过关。同一天，栽了三回。修法是釜底抽薪的：测试要从头到尾
+      走一遍真实流程，而不是只测零件；判断标准要严到它真的有可能亮红灯。
+      永远亮不了红灯的检查，和没有检查是一回事。</p>
+
+      <h2>它是用什么做的</h2>
+
+      <p>Python 写的，不依赖任何框架。整套东西是架在大语言模型上的一层工作
+      制度：流程文档，指令模板，三十来个检查程序，外加约八千行测试代码。
+      这些测试大多不是为了凑指标写的，而是因为某个真实错误曾经漏过去一次。
+      草译和审校按项目拆给不同公司的 AI（DeepSeek、Claude 等），这是整个设计
+      里承重的一根柱子，不是图省事的安排。</p>
+
+      <p>放回格式标记的那一层已经单独开源：<a href="memoq-tag-transfer.html">memoQ Tag Transfer</a>。</p>
+
+    </div>
+
+    <a href="index.html" class="back-link">← 返回项目</a>
+
+    <footer>
+      <p>Luka</p>
+    </footer>
+
+  </div>
+
+</body>
+</html>

@@ -6,18 +6,44 @@ Minimal personal website. Pure HTML + CSS, no build tools.
 
 ```
 luka-site/
-├── index.html              ← Homepage
+├── index.html              ← Homepage (English)
 ├── style.css               ← All styles (Cormorant Garamond)
 ├── README.md
 ├── posts/
 │   └── index.html          ← Posts list (empty for now)
-└── projects/
-    ├── index.html          ← Projects list
-    └── memoq-tag-transfer.html
+├── projects/
+│   ├── index.html          ← Projects list
+│   ├── localization-pipeline.html
+│   ├── memoq-tag-transfer.html
+│   ├── huka-run.html       ← Project page
+│   └── huka-run/           ← Playable game build (not mirrored)
+└── zh/                     ← Chinese mirror of every content page
+    ├── index.html
+    ├── posts/index.html
+    └── projects/
+        ├── index.html
+        ├── localization-pipeline.html
+        ├── memoq-tag-transfer.html
+        └── huka-run.html
 ```
 
 The starter example pages were removed once real content landed. Each list page
 keeps a commented-out `<!-- TEMPLATE ... -->` block to copy for the next entry.
+
+## Language switching
+
+Two static trees, no JavaScript. The last nav item on every page is an
+`EN / 中文` switch (`.lang-switch` in `style.css`): the current language is a
+solid non-link, the other language is a dim link to the exact counterpart page.
+Pages also declare `hreflang` alternates in `<head>`. **When adding or editing
+a page, update both trees** — the round trip (`EN page → 中文 → EN` returns to
+the same page) is the invariant to keep.
+
+The `projects/huka-run/` game build exists only once; the Chinese project page
+links to the same build.
+
+`localization-pipeline.html` is the one page with its own scoped `<style>`
+block (phase list + review-stage cards). Global `style.css` stays untouched.
 
 ## Deploy to GitHub Pages
 

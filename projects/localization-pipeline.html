@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Localization Pipeline — Luka</title>
+  <link rel="stylesheet" href="../style.css">
+  <link rel="alternate" hreflang="zh-CN" href="https://lukalearnscode.github.io/zh/projects/localization-pipeline.html">
+  <link rel="alternate" hreflang="en" href="https://lukalearnscode.github.io/projects/localization-pipeline.html">
+  <style>
+    /* Scoped to this page only. Global style.css untouched. Colours reuse the site palette variables. */
+    .phase-list { margin: 1.6rem 0 2rem; border-top: 1px solid var(--border); }
+    .phase-row { display: flex; gap: 1.1rem; padding: 0.8rem 0; border-bottom: 1px solid var(--border); }
+    .phase-num { flex: 0 0 1.8rem; font-style: italic; font-weight: 700; color: var(--hover); font-size: 1.2rem; line-height: 1.4; }
+    .phase-body { flex: 1; }
+    .phase-name { font-weight: 700; font-size: 1.08rem; }
+    .phase-out { font-size: 0.95rem; color: var(--dim); line-height: 1.5; }
+    .stage-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(185px, 1fr)); gap: 0.9rem; margin: 1.6rem 0 2rem; }
+    .stage-card { border: 1px solid var(--border); border-radius: 3px; padding: 1rem 1.1rem; background: rgba(0,0,0,0.02); }
+    .stage-card .stage-tag { font-size: 0.85rem; font-style: italic; color: var(--hover); }
+    .stage-card h4 { font-size: 1.1rem; font-weight: 700; margin: 0.15rem 0 0.45rem; }
+    .single-content .stage-card p { font-size: 0.97rem; line-height: 1.55; margin-bottom: 0.5rem; color: var(--dim); }
+    .single-content .stage-card p:last-child { margin-bottom: 0; }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+
+    <header>
+      <nav>
+        <a href="../index.html" class="site-name">Luka</a>
+        <a href="../posts/index.html">Posts</a>
+        <a href="index.html">Projects</a>
+        <span class="lang-switch"><span class="current">EN</span> / <a href="../zh/projects/localization-pipeline.html" lang="zh-CN">中文</a></span>
+      </nav>
+    </header>
+
+    <div class="single-header">
+      <h1>Localization Pipeline</h1>
+    </div>
+
+    <div class="single-content">
+
+      <p>An AI localization pipeline for EN↔ZH game and creative text. I designed
+      it, I run real client work through it, and I keep rebuilding the parts that
+      fail. It is not open source — it is a personal production system, tuned to
+      how I work — so this page does the opposite of a repository: it explains
+      the design, part by part, and why each part exists.</p>
+
+      <p>The one-sentence version: a language model translating in one pass
+      produces fluent text with silent errors, and everything in this pipeline
+      exists to catch a specific way that fluent text goes wrong.</p>
+
+      <h2>The problem</h2>
+
+      <p>Machine translation's classic failure is not clumsiness any more. Modern
+      models write smoothly. The failure is drift under the smoothness: a clause
+      quietly dropped, a nuance quietly added, a character name translated one
+      way in chapter one and another way in chapter nine. Each segment reads
+      fine on its own. The errors only exist across segments, or between the
+      translation and a source the reader never sees.</p>
+
+      <p>Worse, a model asked whether its own work is good will say yes. Self-review
+      by the same model is close to worthless — it re-approves its own habits. So
+      the real engineering problem is not translation. It is verification: how do
+      you get honest evidence of quality out of a system whose components all
+      sound confident?</p>
+
+      <p>The pipeline's answer has three parts: split the work into phases that
+      each leave checkable evidence, split review across models that cannot see
+      each other's reasoning, and put mechanical gates between the model and the
+      word "done".</p>
+
+      <h2>Design idea 1: prompts are generated, not written</h2>
+
+      <p>A game UI string, a legal clause, and a line of flirtatious banter need
+      different translation rules — and the rules for translating into Chinese
+      are not the mirror image of the rules for translating out of it. A single
+      thousand-line master prompt where every project uses thirty relevant lines
+      is noise for the model and unmaintainable for me.</p>
+
+      <p>So the system is a <em>meta</em> prompt. It stores rules for
+      <em>generating</em> prompts. Each project starts with an analysis phase —
+      text type, audience, direction, register, terminology, risk — and the
+      translation and review prompts are then assembled for that project
+      specifically, with irrelevant rule branches deleted by a compiler script
+      rather than left in to dilute attention. The skill's job is to make a
+      bespoke rule set cheap.</p>
+
+      <h2>The pipeline: nine phases</h2>
+
+      <p>One line: read the file, understand the project, generate the prompts,
+      translate, review in three stages, restore markup, run global QA, deliver,
+      and feed what went wrong back into the system. Every phase has a
+      "definition of done" — files that must exist and checks that must pass —
+      verified by a script, not by the model's word.</p>
+
+      <div class="phase-list">
+        <div class="phase-row">
+          <div class="phase-num">0</div>
+          <div class="phase-body">
+            <div class="phase-name">Intake</div>
+            <div class="phase-out">Unpack the file into an immutable machine-readable source of truth: segment IDs, order, inline tags, speaker fields. Health checks run here — sentences the CAT tool split across segments, metadata left over from earlier edits.</div>
+          </div>
+        </div>
+        <div class="phase-row">
+          <div class="phase-num">1</div>
+          <div class="phase-body">
+            <div class="phase-name">Analysis &amp; routing</div>
+            <div class="phase-out">What kind of job is this — translation, review, client trial? What domain, direction, risk level? Which models draft and which review? Decisions land in a route card; repeated and near-identical sentences are scanned before anything is translated.</div>
+          </div>
+        </div>
+        <div class="phase-row">
+          <div class="phase-num">2</div>
+          <div class="phase-body">
+            <div class="phase-name">Prompt generation</div>
+            <div class="phase-out">Assemble three prompts from the analysis: one for drafting, one for blind review, one for the bilingual final review. A compiler strips every rule branch that does not apply to this project.</div>
+          </div>
+        </div>
+        <div class="phase-row">
+          <div class="phase-num">3</div>
+          <div class="phase-body">
+            <div class="phase-name">Translation</div>
+            <div class="phase-out">Batched by meaning, never splitting a dialogue or scene, with a rolling recap carried between batches. Each batch is drafted in three explicit steps — understand, translate, polish — and the raw output is kept as evidence. Coverage is reconciled by script: every segment ID in, every segment ID out.</div>
+          </div>
+        </div>
+        <div class="phase-row">
+          <div class="phase-num">4</div>
+          <div class="phase-body">
+            <div class="phase-name">Three-stage review</div>
+            <div class="phase-out">The heart of the system — mechanical preflight, blind review, bilingual final adjudication. Detailed below.</div>
+          </div>
+        </div>
+        <div class="phase-row">
+          <div class="phase-num">5</div>
+          <div class="phase-body">
+            <div class="phase-name">Tag restoration</div>
+            <div class="phase-out">Inline markup goes back into the translated text and is verified — count, content, nesting, and whether each tag wraps the <em>right words</em>. This layer became its own open-source tool: memoQ Tag Transfer.</div>
+          </div>
+        </div>
+        <div class="phase-row">
+          <div class="phase-num">6</div>
+          <div class="phase-body">
+            <div class="phase-name">Global QA</div>
+            <div class="phase-out">Whole-document scans that per-segment review is structurally blind to: punctuation locale, quote-style consistency across the full text, terminology drift, numbers and dates, source-language leftovers — plus a quality score bound to the hash of the exact final text.</div>
+          </div>
+        </div>
+        <div class="phase-row">
+          <div class="phase-num">7</div>
+          <div class="phase-body">
+            <div class="phase-name">Delivery</div>
+            <div class="phase-out">One gate, one command. It re-runs every check itself rather than reading old reports, and nothing ships until it exits clean. Output is whatever the client workflow needs — TMX for CAT-tool import, a bilingual review table, or same-format text.</div>
+          </div>
+        </div>
+        <div class="phase-row">
+          <div class="phase-num">8</div>
+          <div class="phase-body">
+            <div class="phase-name">Learning</div>
+            <div class="phase-out">Every error found late gets triaged: project-specific fixes go into that project's assets; general lessons enter a quarantine queue and only merge into the permanent rules after human confirmation. The pipeline is supposed to be better after every job.</div>
+          </div>
+        </div>
+      </div>
+
+      <h2>The heart: three review stages</h2>
+
+      <p>Review is where most translation quality systems are weakest, because
+      they use one reviewer who sees everything and trusts their own judgement.
+      This pipeline deliberately controls what each reviewing party is allowed
+      to see.</p>
+
+      <div class="stage-grid">
+        <div class="stage-card">
+          <div class="stage-tag">Stage 1</div>
+          <h4>Mechanical preflight</h4>
+          <p>Scripts, not models. Tag counts, placeholders, glossary compliance, punctuation locale, batch-internal consistency, known-defect regression.</p>
+          <p>Sees: everything countable.</p>
+        </div>
+        <div class="stage-card">
+          <div class="stage-tag">Stage 2</div>
+          <h4>Blind review</h4>
+          <p>A different model family reads the translation <em>without the source</em> — the reader's seat. It reports findings; it changes nothing.</p>
+          <p>Sees: target text only.</p>
+        </div>
+        <div class="stage-card">
+          <div class="stage-tag">Stage 3</div>
+          <h4>Bilingual final</h4>
+          <p>A full source-against-target pass that adjudicates every blind finding and checks the whole text, then signs off — or blocks.</p>
+          <p>Sees: both sides, plus all evidence.</p>
+        </div>
+      </div>
+
+      <p><strong>Stage 1 — mechanical preflight.</strong> A standing rule in this
+      system: anything that amounts to counting is decided by a script, never by
+      a language model. Models miscount, and worse, they miscount confidently.
+      So tags, placeholders, numbers, glossary hits, punctuation, and
+      previously-seen defect patterns are all scanned by code with exit codes,
+      and the results enter the later prompts as established fact. Human and
+      model attention is saved for what scripts cannot express.</p>
+
+      <p><strong>Stage 2 — blind review.</strong> The blind reviewer reads the
+      translation the way the player will: with no source text to lean on. That
+      isolation is physical, not honorary — a fresh context that has never seen
+      the source. Two hard rules. First, the blind reviewer must be a different
+      provider <em>and</em> a different model family from the drafting model,
+      because a model re-reading its own output will pass its own habits; a
+      changed persona or prompt does not count as a changed model, and a
+      validation script enforces this. Second, the blind reviewer's opinions are
+      findings, not edits. It can say a line reads stiff; it cannot touch the
+      text.</p>
+
+      <p><strong>Stage 3 — bilingual final.</strong> The final reviewer sees
+      everything: source, target, the mechanical reports, and every blind
+      finding. It adjudicates each finding one by one, re-reads the whole text
+      against the source, and has two disciplines that took real failures to
+      learn. One: fire at meaning, not at form — block additions, omissions and
+      distortions of meaning, but do not drag natural phrasing back toward the
+      source's word order in the name of fidelity. Two: judge the issue and the
+      proposed fix separately — a bad suggested fix does not mean the underlying
+      problem is not real. Without that split, valid issues get silently closed
+      because their first proposed fix was wrong.</p>
+
+      <h2>Design idea 2: the model's word is not evidence</h2>
+
+      <p>A model that has just finished a task and is asked "did you do it
+      properly?" will, in the same breath and the same context window, say yes.
+      Its own sign-off inflates. So the release decision was moved outside the
+      model entirely:</p>
+
+      <p>Every phase must leave artifacts — five machine-readable files per
+      project recording the source truth, the target text, every review verdict,
+      and every check result. An independent validator reconciles them: coverage
+      must be exactly equal, every blind finding must have an adjudication,
+      every claimed check must have real output. The final gate re-runs every
+      scan itself on the exact bytes about to ship, and the scan results are
+      bound to the hash of that version — a green light obtained on last week's
+      draft is worthless for today's.</p>
+
+      <p>One asymmetric rule I'm fond of: <em>absence is legal, false claims are
+      not.</em> If a check did not run and nothing says it ran, the gate flags
+      it and work continues honestly. If the ledger claims a check ran and the
+      evidence file is missing, that is an automatic red. The rule targets the
+      actual failure mode of language models, which is not laziness — it is
+      confident overstatement.</p>
+
+      <h2>Design idea 3: the pipeline must learn</h2>
+
+      <p>Phase 8 is the part I would keep if I had to delete everything else.
+      After every job, errors that were caught late get sorted: fixes that only
+      matter for this client go into the project's assets; anything general
+      becomes a candidate lesson. Candidate lessons sit in a quarantine file and
+      are only merged into the permanent rules after I confirm them — an
+      overreaction to one weird project should not contaminate the system
+      forever.</p>
+
+      <p>The sharpest lessons skip prose entirely and become code: a defect that
+      slipped through once is added to a known-defect library as a regression
+      scan plus a test, so the same bug can never ship twice. And the pipeline
+      now takes exams — bilingual corpus samples with defects deliberately
+      planted, scored on recall. Current result: 11 of 11 planted defects caught
+      after a scoring correction, on a 42-segment paper. The exam rules include
+      one that sounds paranoid and is not: any context that has read the answer
+      key is burned as a test-taker, forever. Leakage does not announce
+      itself.</p>
+
+      <h2>Does it work?</h2>
+
+      <p>Two blind benchmarks against professionally shipped translations, run
+      with the reference sealed until after scoring:</p>
+
+      <p>A Chinese-developed visual novel on Steam, ZH→EN: the pipeline's
+      translation scored at parity with the shipped official English
+      (8.30 vs 8.25 on a seven-dimension weighted rubric — effectively a tie).
+      A published tech biography, EN→ZH against the commercial Chinese edition:
+      comparable quality, each side winning different dimensions.</p>
+
+      <p>The pattern across both is consistent and honest: this system wins the
+      floor and loses the ceiling. It is better than shipped human baselines at
+      completeness, terminology consistency, and zero grammatical hard errors —
+      the blind runs caught real omissions and real grammar mistakes in the
+      official versions. It is still behind the best human work at native
+      liveliness, the spark in a child character's voice. That split is not an
+      accident; it is the design. Review layers exist to make the floor
+      unbreakable. The ceiling is a different project — curated exemplars and
+      per-line candidate sprints — and it is explicitly unfinished.</p>
+
+      <h2>What I got wrong along the way</h2>
+
+      <p><strong>Paper guardrails.</strong> The batching safeguard — split long
+      documents so context stays coherent — was documented, implemented as a
+      function, and never actually wired into the main path. The script sent
+      whole files to the API in one call for weeks, with zero errors reported.
+      Since then the rule is: a guardrail exists only when it is on the
+      execution path and you have watched it fire. New checks are wired in by
+      first making an existing test fail.</p>
+
+      <p><strong>The em-dash incident.</strong> Translating a book chapter into
+      Chinese, the drafting model quietly added Chinese em-dashes to 13 of 38
+      segments — the source had none. All three review stages passed it; each
+      layer was looking at more "important" things. It was caught because a
+      human reader felt one paragraph was slightly off. The fix was not "pay
+      more attention": it became a mechanical rule — compare dash counts between
+      source and target — which flagged 15 segments the day it was written and
+      zero after the cleanup. A human's vague "this feels odd" is often the
+      entrance to a systematic defect; the job is to convert the feeling into a
+      scanner.</p>
+
+      <p><strong>Tests that quietly stop testing.</strong> A test that verifies
+      a function works proves nothing about whether the function is ever called.
+      I shipped guards whose unit tests passed while the call site had been
+      deleted, and assertions loose enough that a table header satisfied a check
+      meant for a full sentence. Same day, three separate instances. The fix is
+      structural: test through the real entry point, and make assertions precise
+      enough that they can actually fail.</p>
+
+      <h2>Stack</h2>
+
+      <p>Python and lxml, no framework. Runs from the command line as an
+      instruction system on top of large language models — process documents,
+      prompt templates, thirty-odd checking scripts with exit codes, and about
+      eight thousand lines of tests, most of which exist because something real
+      once got through. Drafting and review are split across different model
+      families per project (DeepSeek, Claude, and others), which is a load-bearing
+      design decision, not a convenience.</p>
+
+      <p>The tag-restoration layer is open source as
+      <a href="memoq-tag-transfer.html">memoQ Tag Transfer</a>.</p>
+
+    </div>
+
+    <a href="index.html" class="back-link">← Back to Projects</a>
+
+    <footer>
+      <p>Luka</p>
+    </footer>
+
+  </div>
+
+</body>
+</html>

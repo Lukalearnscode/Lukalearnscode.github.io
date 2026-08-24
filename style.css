@@ -58,6 +58,10 @@ nav .site-name {
   margin-right: auto;
 }
 
+/* Language switch (top-right nav): current language solid, other language a dim link */
+nav .lang-switch { font-size: 1.05rem; color: var(--dim); }
+nav .lang-switch .current { color: var(--text); }
+
 /* Hero */
 .hero { padding: 5rem 0 3rem; }
 
@@ -68,6 +72,9 @@ nav .site-name {
   line-height: 1.3;
   margin-bottom: 0.5rem;
 }
+
+/* Keep the greeting emoji from scaling up with the h1 */
+.hero h1 .emoji { font-size: 1.5rem; font-style: normal; }
 
 .hero .tagline {
   font-size: 1.2rem;
