@@ -119,3 +119,7 @@ If you want Markdown-based writing and auto-generated list pages later, this str
 - `posts/*.html` → `content/posts/*.md`
 - `projects/*.html` → `content/projects/*.md`
 - `style.css` → theme CSS
+
+## Thumbnails
+
+Project thumbnails live in `projects/thumbs/` and are shared by both language trees (the Chinese tree references them as `../../projects/thumbs/...`). The two SVGs are hand-drawn monochrome line art in the site's accent colour; `huka-run.jpg` is a captured game frame. Add a thumbnail by giving the entry `class="list-item has-thumb"`, wrapping the text in `<div class="entry">`, and appending a `<figure class="thumb">`; photos take `class="photo"` on the `<img>`.

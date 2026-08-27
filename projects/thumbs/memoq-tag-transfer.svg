@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 600" width="960" height="600" role="img" aria-label="Inline tags carried from a source sentence into its translation">
+  <rect width="960" height="600" fill="#2D332C"/>
+  <g font-family="Georgia, 'Songti SC', serif" font-size="78" fill="#E3E2D8">
+    <text x="80" y="215">Press</text>
+    <text x="308" y="215" fill="#C9AD8C" font-size="62" font-family="Menlo, monospace">&lt;1&gt;</text>
+    <text x="470" y="215" font-weight="700">Start</text>
+    <text x="684" y="215" fill="#C9AD8C" font-size="62" font-family="Menlo, monospace">&lt;/1&gt;</text>
+    <text x="80" y="470">按</text>
+    <text x="180" y="470" fill="#C9AD8C" font-size="62" font-family="Menlo, monospace">&lt;1&gt;</text>
+    <text x="345" y="470" font-weight="700">开始</text>
+    <text x="520" y="470" fill="#C9AD8C" font-size="62" font-family="Menlo, monospace">&lt;/1&gt;</text>
+  </g>
+  <g fill="none" stroke="#C9AD8C" stroke-width="6" stroke-dasharray="14 12" stroke-linecap="round">
+    <path d="M360 240 C 360 340, 235 330, 235 400"/>
+    <path d="M760 240 C 760 340, 590 330, 590 400"/>
+  </g>
+  <g fill="#C9AD8C">
+    <polygon points="217,395 235,425 253,395"/>
+    <polygon points="572,395 590,425 608,395"/>
+  </g>
+</svg>

@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 600" width="960" height="600" role="img" aria-label="Localization pipeline: source text, translation, three review stages, gate">
+  <rect width="960" height="600" fill="#2D332C"/>
+  <g fill="none" stroke="#C9AD8C" stroke-width="7" stroke-linecap="round" stroke-linejoin="round">
+    <!-- source page -->
+    <rect x="80" y="190" width="150" height="220" rx="6"/>
+    <g stroke-width="6" opacity=".55">
+      <line x1="112" y1="240" x2="198" y2="240"/><line x1="112" y1="280" x2="178" y2="280"/><line x1="112" y1="320" x2="198" y2="320"/><line x1="112" y1="360" x2="165" y2="360"/>
+    </g>
+    <!-- arrow -->
+    <line x1="260" y1="300" x2="330" y2="300"/><polyline points="312,282 332,300 312,318"/>
+    <!-- translate -->
+    <circle cx="430" cy="300" r="70"/>
+    <!-- arrow -->
+    <line x1="530" y1="300" x2="600" y2="300"/><polyline points="582,282 602,300 582,318"/>
+    <!-- three review stages -->
+    <rect x="630" y="150" width="170" height="80" rx="6"/>
+    <rect x="630" y="260" width="170" height="80" rx="6"/>
+    <rect x="630" y="370" width="170" height="80" rx="6"/>
+    <!-- gate check -->
+    <polyline points="845,300 875,332 925,268" stroke-width="10"/>
+  </g>
+  <g font-family="Georgia, 'Songti SC', serif" fill="#C9AD8C" font-size="44" text-anchor="middle" font-style="italic">
+    <text x="430" y="315">译</text>
+    <text x="715" y="205" font-size="34" font-style="normal">1</text>
+    <text x="715" y="315" font-size="34" font-style="normal">2</text>
+    <text x="715" y="425" font-size="34" font-style="normal">3</text>
+  </g>
+</svg>
