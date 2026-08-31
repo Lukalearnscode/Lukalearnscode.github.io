@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Claude &amp; Codex 协作台 — Luka</title>
+  <link rel="stylesheet" href="../../style.css">
+  <link rel="alternate" hreflang="zh-CN" href="https://lukalearnscode.github.io/zh/projects/agent-orchestration.html">
+  <link rel="alternate" hreflang="en" href="https://lukalearnscode.github.io/projects/agent-orchestration.html">
+  <style>
+    /* Scoped to this page only. Global style.css untouched. Colours reuse the site palette variables. */
+    .flow { margin: 1.6rem 0 2rem; border-top: 1px solid var(--border); }
+    .flow-row { display: flex; gap: 1.1rem; padding: 0.8rem 0; border-bottom: 1px solid var(--border); }
+    .flow-num { flex: 0 0 1.8rem; font-style: italic; font-weight: 700; color: var(--hover); font-size: 1.2rem; line-height: 1.4; }
+    .flow-body { flex: 1; }
+    .flow-name { font-weight: 700; font-size: 1.08rem; }
+    .flow-out { font-size: 0.95rem; color: var(--dim); line-height: 1.6; }
+    .trap { border: 1px solid var(--border); border-radius: 3px; padding: 1.05rem 1.2rem; margin: 1.3rem 0; background: rgba(0,0,0,0.02); }
+    .trap .trap-tag { font-size: 0.85rem; font-style: italic; color: var(--hover); }
+    .trap h4 { font-size: 1.1rem; font-weight: 700; margin: 0.15rem 0 0.5rem; }
+    .single-content .trap p { font-size: 0.97rem; line-height: 1.65; margin-bottom: 0.55rem; }
+    .single-content .trap p:last-child { margin-bottom: 0; }
+    .single-content .trap .fix { color: var(--dim); }
+    .runs { width: 100%; border-collapse: collapse; margin: 1.5rem 0 2rem; font-size: 0.95rem; }
+    .runs th, .runs td { text-align: left; padding: 0.6rem 0.7rem; border-bottom: 1px solid var(--border); vertical-align: top; line-height: 1.6; }
+    .runs th { font-weight: 700; color: var(--hover); font-size: 0.9rem; }
+    .runs td:first-child { color: var(--dim); }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+
+    <header>
+      <nav>
+        <a href="../index.html" class="site-name">Luka</a>
+        <a href="../posts/index.html">文章</a>
+        <a href="index.html">项目</a>
+        <span class="lang-switch"><a href="../../projects/agent-orchestration.html" lang="en">EN</a> / <span class="current">中文</span></span>
+      </nav>
+    </header>
+
+    <div class="single-header">
+      <h1>Claude &amp; Codex 协作台</h1>
+    </div>
+
+    <div class="single-content">
+
+      <p>一个脚本，让 Claude 和 Codex 互相盯着干活，全程没人看着：Claude 负责写代码，Codex 负责挑它的错、而且有权直接打回；最后由一个谁都改不了的检查程序说了算，决定这份东西能不能交。</p>
+
+      <p>把这两个 AI 接起来，一个下午就能做完，网上也已经有好几个人做过了。真正花掉我时间的、也是唯一值得写下来的，是它跑通之后我才知道的那些事：这么一条流水线，有多少种办法能给你亮一盏绿灯，而底下的活其实压根没干。</p>
+
+      <p>这一页就是那张清单。下面每一条，都对应我真的栽过的一次。</p>
+
+      <h2>它长什么样</h2>
+
+      <div class="flow">
+        <div class="flow-row">
+          <div class="flow-num">1</div>
+          <div class="flow-body">
+            <div class="flow-name">先隔离，再动手</div>
+            <div class="flow-out">写代码的那个，在一份临时复制出来的工作区里干活，单开一条分支。它无论怎么折腾，都碰不到我手头没保存完的东西。</div>
+          </div>
+        </div>
+        <div class="flow-row">
+          <div class="flow-num">2</div>
+          <div class="flow-body">
+            <div class="flow-name">Codex 来审，只准看不准改</div>
+            <div class="flow-out">Codex 读改动记录，对着任务书逐条核，然后必须从三个答案里选一个交回来：通过、要修、推倒重来。答案的格式是被强制约束的，它没法含糊其辞。</div>
+          </div>
+        </div>
+        <div class="flow-row">
+          <div class="flow-num">3</div>
+          <div class="flow-body">
+            <div class="flow-name">修完，换个人再审一遍</div>
+            <div class="flow-out">判「要修」的话，审的那个拿到改文件的权限，自己动手补。补完之后，叫一个全新的、什么都不知道的来重审。<em>动手修的人，不许给自己打分。</em></div>
+          </div>
+        </div>
+        <div class="flow-row">
+          <div class="flow-num">4</div>
+          <div class="flow-body">
+            <div class="flow-name">最后让机器判</div>
+            <div class="flow-out">跑一个两个 AI 都无权修改的测试脚本。结果由它说了算，不看任何人的总结陈词。</div>
+          </div>
+        </div>
+      </div>
+
+      <p>为什么要用两家公司的产品，而不是同一个模型开两个窗口？不是因为谁更聪明，是因为<strong>它们犯错的方式不一样</strong>。同一个模型检查自己写的东西，等于把自己的习惯又认可了一遍；两个不同来路的 AI 吵起来的地方，才是真正有信息的地方。</p>
+
+      <h2>它骗你的七种方式</h2>
+
+      <div class="trap">
+        <div class="trap-tag">坑 01</div>
+        <h4>活没干成，它照样报「顺利结束」</h4>
+        <p>程序干完活会留下一个数字，0 表示一切正常，非 0 表示出事了。问题是这类 AI 工具本质上是聊天程序：模型放弃了、道歉了、或者根本理解错了任务，它照样是正常聊完然后退出，留下的数字仍然是 0。</p>
+        <p class="fix"><strong>改法：</strong>永远不拿这个数字当判据。是否成功，只看事后硬盘上多出了哪些文件，以及一个不是它写的检查程序怎么说。</p>
+      </div>
+
+      <div class="trap">
+        <div class="trap-tag">坑 02</div>
+        <h4>你不给它考卷，它就自己出一张</h4>
+        <p>你告诉它「有个检查程序会决定你的活收不收」，如果那个检查程序还不存在，它会非常热心地帮你写一个。写出来的那个，一定通过。永远通过。</p>
+        <p class="fix"><strong>改法：</strong>开跑前先记下当时有哪个检查程序。之后才冒出来的一律不认，这一轮直接标成「未经检验」，而不是「通过」。</p>
+      </div>
+
+      <div class="trap">
+        <div class="trap-tag">坑 03</div>
+        <h4>它能改题</h4>
+        <p>任务书和检查程序，说到底也只是工作区里的两个文件，而它对整个工作区有修改权。改题目远比做题省事，而且改完之后，那份改动记录看上去一点也不可疑。</p>
+        <p class="fix"><strong>改法：</strong>开跑前先给这两个文件各取一份「指纹」，跑完再对一次。指纹对不上就算这一轮输，代码写得再漂亮也不算。</p>
+      </div>
+
+      <div class="trap">
+        <div class="trap-tag">坑 04</div>
+        <h4>让动手修的那个，自己判自己修好没有</h4>
+        <p>最顺手的做法是：审出问题、让它修、修完再问它一句「好了吗」。这个流程完全没用。你让一个 AI 检查它自己刚做完的事，它会说好了，而且会给你列出一二三条理由。</p>
+        <p class="fix"><strong>改法：</strong>修和复审必须是两次独立的调用，中间不共享任何记忆。复审的那个，最好连「我在看一份补丁」都不知道，更别说知道是自己补的。</p>
+      </div>
+
+      <div class="trap">
+        <div class="trap-tag">坑 05</div>
+        <h4>它一行代码都没跑过，整条流水线没一个环节发现</h4>
+        <p>这个坑藏了一个月。Claude 跑在一种权限模式下：允许它改文件，但执行命令要人点头同意。而无人值守的场合，压根没有人在旁边点头。于是它每次想跑测试，都被静默拒绝，最后整份代码是它<strong>纯靠脑子推演</strong>写出来的，一次都没运行过。</p>
+        <p>然后：Codex 通过了，检查程序绿了，整条流水线报了「顺利结束」。唯一的痕迹，是它在收工笔记里老老实实写的一句——<em>以上结论全部是人工逐行推演，我没能实际运行任何东西。</em>自动环节里，没有任何一个发现了这件事。</p>
+        <p class="fix"><strong>改法：</strong>提前只授权一条命令，就是那个检查程序，别的一律不给。这点权限刚好够它自己验一遍，又不够它去干坑 02 里那件事（自己造一张一定能过的考卷）。</p>
+      </div>
+
+      <div class="trap">
+        <div class="trap-tag">坑 06</div>
+        <h4>你以为在用默认设置，其实被人从背后改掉了</h4>
+        <p>我给脚本加了两个旋钮：用哪个模型、让它想多深。约定是留空就沿用我自己的默认设置。结果我给旋钮起的名字，和 Claude Code 塞给所有子程序的一个同名设置<strong>撞车</strong>了。于是「沿用默认」这条路读到的是外面塞进来的值，把思考深度悄悄<em>调低</em>了一档。</p>
+        <p>没有报错，没有警告，语法检查完全通过。</p>
+        <p class="fix"><strong>改法：</strong>自己脚本里的设置项，名字一律加个专属前缀，等于给它加个姓。改完之后，用「替身程序」跑一遍——让假的 AI 把它实际收到的参数原样打印出来。这种事，光读自己写的代码是看不出来的。</p>
+      </div>
+
+      <div class="trap">
+        <div class="trap-tag">坑 07</div>
+        <h4>「不留痕迹」是说明书上写的，不是事实</h4>
+        <p>Codex 有个「临时模式」，文档说这样不会留下会话记录。我据此以为可以同时开好几个跑。后来盯着文件的修改时间看，发现它每次调用<strong>仍然在写</strong>本地那个状态数据库。而我最早那次检查，比的是文件<em>数量</em>——数量从头到尾没变过，所以我当时得出了一个完全相反的结论，还挺有信心。</p>
+        <p class="fix"><strong>改法：</strong>老老实实加一把锁，一个一个来。以及：验证一件事的时候，先确认你量的那个东西，真的是你想知道的那个东西。</p>
+      </div>
+
+      <h2>还有第八条，是关于我自己的</h2>
+
+      <p>有一轮跑完，我没有信审查方给的结论，自己另写了一套用例重测。结果测出一个「真缺陷」——整条流水线放行了，但东西是错的。我当时准备把它当成这次最重要的发现写出来。</p>
+
+      <p>缺陷在我的测试代码里。我那段验证程序自己撞上了编程语言的一个内部限制，然后把这笔账记在了被测代码头上。代码是对的，歪的是我手里的尺子。</p>
+
+      <p>换一条路重新验一遍，这个直觉是对的，也是我最依赖的一招。但它不是免费的：第二条路同样是一段临时写的程序，写它的人心里已经有了预设答案。<strong>独立验证买到的是「不会一起错」，不是「不会错」。</strong></p>
+
+      <h2>这套东西到底换来了什么</h2>
+
+      <p>同一个任务，无人值守跑了三次。任务写了五条验收要求，其中我故意让自动测试只覆盖三条，剩下两条只有真的把代码读一遍才可能发现。</p>
+
+      <table class="runs">
+        <tr>
+          <th></th>
+          <th>第一次</th>
+          <th>第二次</th>
+          <th>第三次</th>
+        </tr>
+        <tr>
+          <td>裁决</td>
+          <td>一轮直接通过</td>
+          <td><strong>要修</strong> → 修 → 换人复审通过</td>
+          <td><strong>要修</strong> → 修 → 换人复审通过</td>
+        </tr>
+        <tr>
+          <td>写代码的跑过代码吗</td>
+          <td>没有，全靠推演</td>
+          <td>跑了</td>
+          <td>跑了</td>
+        </tr>
+        <tr>
+          <td>审出来的问题</td>
+          <td>无</td>
+          <td>两条，都属实</td>
+          <td>一条，属实</td>
+        </tr>
+        <tr>
+          <td>五条验收要求</td>
+          <td>—</td>
+          <td>修补后满足</td>
+          <td>一次就全满足</td>
+        </tr>
+        <tr>
+          <td>我自己另写用例重测</td>
+          <td>10 / 10</td>
+          <td>16 / 16</td>
+          <td>18 / 18</td>
+        </tr>
+      </table>
+
+      <p>第三次和第二次之间我只改了一件事：把 Codex 的思考档位往上提了一级。差别是实打实的——第二次实现者还留了个毛病要 Codex 修，第三次一次就把五条要求全做对了，Codex 只挑出一个多余的缓存文件。</p>
+
+      <p>第一次看着更漂亮，但什么也没教给我。<strong>所有有价值的东西，都发生在审查方说「不」的那条路上</strong>：提出异议、动手修补、再叫一个跟这次修补毫无关系的来看一眼，最后才轮到机器把关。一条从来没有否决过任何东西的流水线，不叫经过检验，那叫运气一直不错。</p>
+
+      <p>审查方还在一个我没想到的地方立了功。它挑出的两条毛病里，有一条是「提交了一个没人要的缓存文件」。而那种文件，<strong>只有代码真的被运行过才会生成</strong>。这句抱怨顺带成了证据，说明坑 05 确实修好了。</p>
+
+      <h2>什么时候这套东西不管用</h2>
+
+      <p>它全部的地基只有一样：一个不带感情、只给「过」或「不过」的检查程序。有它的场合，这套机器值这个成本。没有它的场合——比如一段译文好不好，一个设计对不对——最后那道关卡就没有东西可以把，而第二个 AI 说得再头头是道，也只是又一份无法验证的意见。那种时候，诚实的答案还是：找个人，把东西读一遍。</p>
+
+      <p>脚本本身没有公开。它焊死在一种操作系统、一种命令行环境，以及我这台机器上的具体安装路径上，别人原样拿去大概率跑不起来，而跑不起来的原因跟上面这些想法一点关系都没有。真正能带走的，是上面那张清单。</p>
+
+    </div>
+
+    <footer>
+      <p>Luka</p>
+    </footer>
+
+  </div>
+
+</body>
+</html>

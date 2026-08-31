@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Agent Orchestration — Luka</title>
+  <link rel="stylesheet" href="../style.css">
+  <link rel="alternate" hreflang="zh-CN" href="https://lukalearnscode.github.io/zh/projects/agent-orchestration.html">
+  <link rel="alternate" hreflang="en" href="https://lukalearnscode.github.io/projects/agent-orchestration.html">
+  <style>
+    /* Scoped to this page only. Global style.css untouched. Colours reuse the site palette variables. */
+    .flow { margin: 1.6rem 0 2rem; border-top: 1px solid var(--border); }
+    .flow-row { display: flex; gap: 1.1rem; padding: 0.8rem 0; border-bottom: 1px solid var(--border); }
+    .flow-num { flex: 0 0 1.8rem; font-style: italic; font-weight: 700; color: var(--hover); font-size: 1.2rem; line-height: 1.4; }
+    .flow-body { flex: 1; }
+    .flow-name { font-weight: 700; font-size: 1.08rem; }
+    .flow-out { font-size: 0.95rem; color: var(--dim); line-height: 1.5; }
+    .trap { border: 1px solid var(--border); border-radius: 3px; padding: 1.05rem 1.2rem; margin: 1.3rem 0; background: rgba(0,0,0,0.02); }
+    .trap .trap-tag { font-size: 0.85rem; font-style: italic; color: var(--hover); }
+    .trap h4 { font-size: 1.1rem; font-weight: 700; margin: 0.15rem 0 0.5rem; }
+    .single-content .trap p { font-size: 0.97rem; line-height: 1.6; margin-bottom: 0.55rem; }
+    .single-content .trap p:last-child { margin-bottom: 0; }
+    .single-content .trap .fix { color: var(--dim); }
+    .runs { width: 100%; border-collapse: collapse; margin: 1.5rem 0 2rem; font-size: 0.95rem; }
+    .runs th, .runs td { text-align: left; padding: 0.6rem 0.7rem; border-bottom: 1px solid var(--border); vertical-align: top; line-height: 1.5; }
+    .runs th { font-weight: 700; color: var(--hover); font-size: 0.9rem; }
+    .runs td:first-child { color: var(--dim); }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+
+    <header>
+      <nav>
+        <a href="../index.html" class="site-name">Luka</a>
+        <a href="../posts/index.html">Posts</a>
+        <a href="index.html">Projects</a>
+        <span class="lang-switch"><span class="current">EN</span> / <a href="../zh/projects/agent-orchestration.html" lang="zh-CN">中文</a></span>
+      </nav>
+    </header>
+
+    <div class="single-header">
+      <h1>Agent Orchestration</h1>
+    </div>
+
+    <div class="single-content">
+
+      <p>A shell script that runs Claude and Codex against each other, unattended:
+      Claude writes the code, Codex reviews it and is allowed to reject it, and a
+      verifier that neither of them can touch decides whether the result ships.</p>
+
+      <p>Wiring the two of them together is an afternoon's work. Several people have
+      published tools that do it. What took considerably longer, and is the only
+      part worth writing down, is everything I learned after it worked: the ways
+      a pipeline like this hands you a green light over work that was never
+      actually done.</p>
+
+      <p>This page is that list. Every item below cost me a real failure.</p>
+
+      <h2>The shape</h2>
+
+      <div class="flow">
+        <div class="flow-row">
+          <div class="flow-num">1</div>
+          <div class="flow-body">
+            <div class="flow-name">Implement, in isolation</div>
+            <div class="flow-out">The writing agent works in a throwaway copy of the
+            repository, on its own branch. Nothing it does can touch uncommitted work.</div>
+          </div>
+        </div>
+        <div class="flow-row">
+          <div class="flow-num">2</div>
+          <div class="flow-body">
+            <div class="flow-name">Review, read-only</div>
+            <div class="flow-out">Codex reads the diff
+            against the task contract and returns one of three verdicts, in a schema
+            it is forced to conform to: accept, fix, or reject.</div>
+          </div>
+        </div>
+        <div class="flow-row">
+          <div class="flow-num">3</div>
+          <div class="flow-body">
+            <div class="flow-name">Repair, then re-review by someone else</div>
+            <div class="flow-out">On <em>fix</em>, the reviewer gets write access and
+            patches the code. Then a fresh instance reviews the patch. The agent that
+            repaired the work never grades it.</div>
+          </div>
+        </div>
+        <div class="flow-row">
+          <div class="flow-num">4</div>
+          <div class="flow-body">
+            <div class="flow-name">Verify, mechanically</div>
+            <div class="flow-out">A test script the agents are forbidden to modify
+            runs last. Its exit code, not anyone's summary, decides the outcome.</div>
+          </div>
+        </div>
+      </div>
+
+      <p>The reason to use two vendors rather than two instances of the same model
+      is not that one is smarter. It is that they fail differently. A model
+      reviewing its own work re-approves its own habits; the disagreements between
+      two lineages are where the signal is.</p>
+
+      <h2>Seven ways it lies to you</h2>
+
+      <div class="trap">
+        <div class="trap-tag">Trap 01</div>
+        <h4>A failed run still exits zero</h4>
+        <p>Agent CLIs are conversational tools. When the model gives up, apologises,
+        or misunderstands the task entirely, the process still terminates normally.
+        If your script branches on the exit code, it will cheerfully report success
+        over a session that accomplished nothing.</p>
+        <p class="fix"><strong>Fix:</strong> never let a run's own exit code decide
+        anything. Success is defined only by files that exist afterwards and by a
+        verifier the agent did not write.</p>
+      </div>
+
+      <div class="trap">
+        <div class="trap-tag">Trap 02</div>
+        <h4>It will write its own passing test</h4>
+        <p>Tell an agent that a verification script decides whether its work is
+        accepted, and if that script does not already exist, it will helpfully
+        create one. It will pass. It always passes.</p>
+        <p class="fix"><strong>Fix:</strong> record which verifier existed
+        <em>before</em> the run started. Anything that appears later is evidence of
+        nothing, and the run is labelled unverified rather than passed.</p>
+      </div>
+
+      <div class="trap">
+        <div class="trap-tag">Trap 03</div>
+        <h4>It can edit the question</h4>
+        <p>The task description and the verifier are both just files in the
+        repository, and the agent has write access to the repository. Rewriting the
+        requirement is a much cheaper way to satisfy it than doing the work, and
+        nothing about the resulting diff looks suspicious.</p>
+        <p class="fix"><strong>Fix:</strong> hash the contract files before the run
+        and check the hashes afterwards. Changed contract means the round is
+        forfeit, no matter how good the code looks.</p>
+      </div>
+
+      <div class="trap">
+        <div class="trap-tag">Trap 04</div>
+        <h4>The one who fixed it says it is fixed</h4>
+        <p>The obvious loop is: review, repair, ask the repairer to confirm. It is
+        also worthless. An agent asked to check work it just performed will
+        approve it, in detail, with reasons.</p>
+        <p class="fix"><strong>Fix:</strong> the repair step and the re-review step
+        must be separate invocations with no shared memory. The reviewer of a patch
+        should not know it is looking at a patch, let alone its own.</p>
+      </div>
+
+      <div class="trap">
+        <div class="trap-tag">Trap 05</div>
+        <h4>It never ran the code, and nothing noticed</h4>
+        <p>This one was invisible for a month. Claude ran under a
+        permission mode that allowed file edits but required approval for shell
+        commands. Nobody is present to approve anything in an unattended run, so
+        every attempt to execute the tests was silently denied. The agent wrote the
+        implementation entirely by reasoning, without running it once.</p>
+        <p>Codex accepted the code. The verifier passed. The pipeline exited
+        zero. The only trace was one honest paragraph in the notes file the agent
+        was asked to write: <em>all of the above is manual reasoning; I was unable
+        to execute anything.</em> Not one automated stage caught it.</p>
+        <p class="fix"><strong>Fix:</strong> pre-authorise exactly one command, the
+        verifier, and nothing else. That is enough for the agent to check itself,
+        and too little for it to build the fake test from Trap 02.</p>
+      </div>
+
+      <div class="trap">
+        <div class="trap-tag">Trap 06</div>
+        <h4>The host quietly overrides your settings</h4>
+        <p>I added knobs for which model to use and how hard it should think, with
+        the convention that an empty value inherits the user's defaults. The variable
+        names I chose collided with variables Claude Code injects into every
+        subprocess it spawns. So the "inherit the default" path silently read the
+        host's value instead and dialled the reasoning effort <em>down</em> — with
+        no error, no warning, and a syntax check that passes cleanly.</p>
+        <p class="fix"><strong>Fix:</strong> namespace every configuration variable
+        your script owns. Then verify by running the pipeline against stub binaries
+        that print the arguments they actually received. Reading your own code
+        proves nothing here.</p>
+      </div>
+
+      <div class="trap">
+        <div class="trap-tag">Trap 07</div>
+        <h4>"Stateless" is a claim, not a fact</h4>
+        <p>Codex offers an ephemeral mode, documented as not persisting
+        the session. I took that to mean I could run several at once. Watching file
+        modification times showed it still writes to its local state database on
+        every call. My original check had compared file <em>counts</em>, which
+        never changed, so I had confidently concluded the opposite.</p>
+        <p class="fix"><strong>Fix:</strong> serialise anyway, with a real lock.
+        And when you verify a claim, make sure the thing you measured is the thing
+        you cared about.</p>
+      </div>
+
+      <h2>The eighth, which is about me</h2>
+
+      <p>After one run I re-tested the output myself rather than trusting the
+      reviewer's summary, and found what looked like a genuine defect the whole
+      pipeline had waved through. I was about to write it up as the headline
+      finding.</p>
+
+      <p>The defect was in my test. My verification script hit a limit in the
+      language runtime and reported it as the tested code's failure. The code was
+      correct; the instrument was broken.</p>
+
+      <p>Checking by a second, independent route is the right instinct, and it is
+      the one I lean on hardest. It is also not free: the second route is a piece
+      of software too, written in a hurry, by someone who already believes he
+      knows the answer. Independence buys you decorrelated errors, not zero errors.</p>
+
+      <h2>What the pipeline actually bought</h2>
+
+      <p>Three unattended runs of the same task. The task had five acceptance
+      criteria, deliberately written so that the automated tests only covered
+      three of them; the other two could only be caught by reading the code.</p>
+
+      <table class="runs">
+        <tr>
+          <th></th>
+          <th>Run 1</th>
+          <th>Run 2</th>
+          <th>Run 3</th>
+        </tr>
+        <tr>
+          <td>Verdict</td>
+          <td>Accept, first round</td>
+          <td><strong>Fix</strong> → repair → fresh reviewer accepted</td>
+          <td><strong>Fix</strong> → repair → fresh reviewer accepted</td>
+        </tr>
+        <tr>
+          <td>Did the writer run the code?</td>
+          <td>No. Reasoned it out blind</td>
+          <td>Yes</td>
+          <td>Yes</td>
+        </tr>
+        <tr>
+          <td>Issues found by review</td>
+          <td>None</td>
+          <td>Two, both real</td>
+          <td>One, real</td>
+        </tr>
+        <tr>
+          <td>Five acceptance criteria</td>
+          <td>—</td>
+          <td>Met after repair</td>
+          <td>All met first try</td>
+        </tr>
+        <tr>
+          <td>My independent re-test</td>
+          <td>10 / 10</td>
+          <td>16 / 16</td>
+          <td>18 / 18</td>
+        </tr>
+      </table>
+
+      <p>Between run 2 and run 3 I changed exactly one thing: I raised Codex's
+      reasoning effort by one level. The difference was real — run 2 still left a
+      defect for the reviewer to repair, while run 3 satisfied all five criteria on
+      the first attempt and the only complaint was a stray cache file.</p>
+
+      <p>Run 1 looks like the better outcome and taught me nothing. Everything of
+      value happened on the path where the reviewer said no: the objection, the
+      repair, the second opinion from an agent with no stake in the repair, and
+      only then the mechanical gate. A pipeline that has never rejected anything
+      has not been tested; it has just been lucky.</p>
+
+      <p>The reviewer also earned its keep in a way I did not expect. One of the
+      two objections was that the implementation had committed a cache file nobody
+      asked for. That file only exists if the code was actually executed. The
+      complaint was, incidentally, proof that Trap 05 had been fixed.</p>
+
+      <h2>Where this does not apply</h2>
+
+      <p>All of it rests on one thing: a verifier that returns pass or fail without
+      an opinion. Where I have that, the machinery is worth its cost. Where I do
+      not — the quality of a translation, whether a design is any good — there is
+      nothing for the final gate to check, and a confident review from a second
+      model is just a second opinion that also cannot be verified. The honest
+      answer there is still a person reading the work.</p>
+
+      <p>The script is not published. It is welded to one operating system, one
+      shell, and the exact install paths on my machine, and a clean clone would
+      fail on someone else's laptop for reasons that have nothing to do with the
+      ideas. The list above is the part that transfers.</p>
+
+    </div>
+
+    <footer>
+      <p>Luka</p>
+    </footer>
+
+  </div>
+
+</body>
+</html>
