@@ -94,7 +94,7 @@
 
       <p>The answer holds two groups, one per window. Here is a trap: they are named <code>primary</code> and <code>secondary</code>, which sounds like importance but is only position. What actually identifies a window is the field saying how many minutes long it is. 300 is the five-hour window, 10080 is the week. Go by the names and the day they swap order, you are showing the wrong one.</p>
 
-      <p>I pulled that part out into a script of under forty lines. No dependencies. Run it and your own limits print in the terminal:</p>
+      <p>I pulled that part out into <a href="https://github.com/Lukalearnscode/codex-usage-hud/blob/main/examples/read_rate_limits.py">a script of under forty lines</a>. No dependencies. Run it and your own limits print in the terminal:</p>
 
       <pre>python3 examples/read_rate_limits.py
 
@@ -159,7 +159,7 @@
 
       <h2>Take it</h2>
 
-      <p>The code is on GitHub under MIT. Besides the panel, the repository has three documents: one covering only how to ask for the limits (useful without installing anything), one on how the panel is put together, and one listing nine pitfalls with symptoms, causes and how to reproduce each.</p>
+      <p>The code is <a href="https://github.com/Lukalearnscode/codex-usage-hud">on GitHub</a> under MIT. Besides the panel, the repository has three documents: one covering only how to ask for the limits (useful without installing anything), one on how the panel is put together, and one listing nine pitfalls with symptoms, causes and how to reproduce each.</p>
 
       <p>One warning. Every path, method name and field name above is internal to the Codex desktop app. None of it is a published interface and any release can change it. I verified against codex-cli 0.153.0 in September 2026. If you build on it, leave yourself room: ignore fields you do not recognise, survive a missing one, and show "could not read this" rather than a number that is wrong.</p>
 
