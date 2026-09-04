@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Codex Usage HUD — Luka</title>
+  <link rel="stylesheet" href="../style.css">
+  <link rel="alternate" hreflang="zh-CN" href="https://lukalearnscode.github.io/zh/projects/codex-usage-hud.html">
+  <link rel="alternate" hreflang="en" href="https://lukalearnscode.github.io/projects/codex-usage-hud.html">
+  <style>
+    /* Scoped to this page only. Global style.css untouched. Colours reuse the site palette variables. */
+    .shot { margin: 1.8rem 0; }
+    .shot img { width: 100%; display: block; border-radius: 4px; border: 1px solid var(--border); }
+    .shot figcaption { font-size: 0.9rem; color: var(--dim); margin-top: 0.6rem; line-height: 1.6; }
+    .trap { border: 1px solid var(--border); border-radius: 3px; padding: 1.05rem 1.2rem; margin: 1.3rem 0; background: rgba(0,0,0,0.02); }
+    .trap .trap-tag { font-size: 0.85rem; font-style: italic; color: var(--hover); }
+    .trap h4 { font-size: 1.1rem; font-weight: 700; margin: 0.15rem 0 0.5rem; }
+    .single-content .trap p { font-size: 0.97rem; line-height: 1.65; margin-bottom: 0.55rem; }
+    .single-content .trap p:last-child { margin-bottom: 0; }
+    .single-content .trap .fix { color: var(--dim); }
+    .steps { margin: 1.5rem 0 2rem; border-top: 1px solid var(--border); }
+    .step-row { display: flex; gap: 1.1rem; padding: 0.8rem 0; border-bottom: 1px solid var(--border); }
+    .step-num { flex: 0 0 1.8rem; font-style: italic; font-weight: 700; color: var(--hover); font-size: 1.2rem; line-height: 1.4; }
+    .step-body { flex: 1; }
+    .step-name { font-weight: 700; font-size: 1.08rem; }
+    .step-out { font-size: 0.95rem; color: var(--dim); line-height: 1.6; }
+    .single-content pre { background: rgba(0,0,0,0.16); border: 1px solid var(--border); border-radius: 3px; padding: 0.9rem 1.1rem; overflow-x: auto; font-size: 0.9rem; line-height: 1.6; }
+    .single-content code { font-size: 0.92em; }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+
+    <header>
+      <nav>
+        <a href="../index.html" class="site-name">Luka</a>
+        <a href="../posts/index.html">Posts</a>
+        <a href="index.html">Projects</a>
+        <span class="lang-switch"><span class="current">EN</span> / <a href="../zh/projects/codex-usage-hud.html" lang="zh-CN">中文</a></span>
+      </nav>
+    </header>
+
+    <div class="single-header">
+      <h1>Codex Usage HUD</h1>
+    </div>
+
+    <div class="single-content">
+
+      <p>Codex has two rate-limit windows, one measured over five hours and one over a week. It does not tell you how much is left. You usually find out when it runs out, halfway through something.</p>
+
+      <p>So I built a small panel that sits in the bottom-right corner of the Codex window. Two lines: how much of each window is gone, and how long until it resets. Switch to another app and it disappears.</p>
+
+      <figure class="shot">
+        <img src="images/codex-hud-context.png" alt="The panel resting in the corner of the Codex window">
+        <figcaption>That is all of it. Two lines, out of the way, invisible unless Codex is in front</figcaption>
+      </figure>
+
+      <p>The thing itself took an afternoon. What this page is actually about is the other half: how to ask for the number, and the walls I walked into on the way. The code is open source, link at the bottom.</p>
+
+      <h2>Where the number comes from</h2>
+
+      <p>This is the one part you cannot find elsewhere, and the part worth taking away on its own.</p>
+
+      <p>The Codex desktop app ships a small program alongside it. Think of it as an enquiry desk that lives on your machine and already knows who is signed in. You do not show it any credentials. You ask it how much of your quota is left, and it answers.</p>
+
+      <p>That matters. The other route, the one that looks easier, is to open the file where Codex keeps your login and parse the token out of it yourself. I did not take that route and I would not recommend it: the moment you touch someone else's credentials you are responsible for them, and the day that file format changes your tool is dead. Going through the enquiry desk means the credentials never pass through your hands at all.</p>
+
+      <p>The conversation is three sentences, one per line:</p>
+
+      <div class="steps">
+        <div class="step-row">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <div class="step-name">Say hello</div>
+            <div class="step-out">Send <code>initialize</code> with a number attached, then wait for the reply carrying the same number.</div>
+          </div>
+        </div>
+        <div class="step-row">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <div class="step-name">Say you heard it</div>
+            <div class="step-out">Send <code>initialized</code>. No number, and nothing replies. Skip it and the conversation stops there.</div>
+          </div>
+        </div>
+        <div class="step-row">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <div class="step-name">Ask the question</div>
+            <div class="step-out">Send <code>account/rateLimits/read</code>. Both windows come back together.</div>
+          </div>
+        </div>
+      </div>
+
+      <p>The answer holds two groups, one per window. Here is a trap: they are named <code>primary</code> and <code>secondary</code>, which sounds like importance but is only position. What actually identifies a window is the field saying how many minutes long it is. 300 is the five-hour window, 10080 is the week. Go by the names and the day they swap order, you are showing the wrong one.</p>
+
+      <p>I pulled that part out into a script of under forty lines. No dependencies. Run it and your own limits print in the terminal:</p>
+
+      <pre>python3 examples/read_rate_limits.py
+
+ 5-hour  ████████  100.0%  resets in 1h42m
+ weekly  ████░░░░   47.0%  resets in 6d11h</pre>
+
+      <p>If all you wanted was the number, you can stop here. Everything below is the shell I wrapped around it.</p>
+
+      <h2>One thing you cannot design around</h2>
+
+      <p>I wanted it to launch when Codex launches. That would be the clean version. It cannot be done, for a simple reason: if the program is not running, nothing can tell it that Codex just opened. To watch for that, something has to be awake already.</p>
+
+      <p>So instead it sits in the background from login, with no Dock icon and no menu-bar icon. You never see it. The panel appears only when Codex comes to the front. From where you sit that is indistinguishable from launching on demand, and it costs 35 MB of memory.</p>
+
+      <h2>Walls I hit</h2>
+
+      <div class="trap">
+        <span class="trap-tag">First</span>
+        <h4>I asked, nobody answered, and it stayed that way forever</h4>
+        <p>The numbers stop updating. No error, no reconnect, no crash. Just a value from several hours ago, sitting there.</p>
+        <p>Here is why. The program keeps a note saying "a question is out, waiting for the answer", and clears it when the answer lands. To stop questions piling up, it also skips any new question while that note is still there. Sound logic, except it assumes an answer always arrives. If one goes missing, the note is never cleared, and every question after that gets skipped by its own guard — including the fallback that fires every sixty seconds. The other program is still alive, so the "it died" handler never runs either. Everything is jammed, and nothing on screen says so.</p>
+        <p class="fix">The fix is a fifteen-second alarm on every question; when it rings, tear the connection down and rebuild it. Reproducing it was the interesting part. My first idea was to freeze the other process, but a frozen process stops reading its pipe, so my write fails and that triggers the normal recovery instead. The only thing that reproduces it is a fake enquiry desk that takes your question and says nothing.</p>
+      </div>
+
+      <div class="trap">
+        <span class="trap-tag">Second</span>
+        <h4>The panel went off the screen</h4>
+        <p>On macOS, asking where a window is and putting a window somewhere use two coordinate systems that run in opposite directions. One starts at the top-left corner and grows downward. The other starts at the bottom-left and grows upward. You have to convert.</p>
+        <p class="fix">The conversion can only use the height of the primary screen. Two other versions look correct, and on a single display they are correct: taking the tallest screen, or taking whichever screen is currently active. Put an external display <em>above</em> the laptop one day and the first is off by a whole screen height. The second is worse, because it changes as you drag windows between displays. Neither is a mistake you can find on your own machine.</p>
+      </div>
+
+      <div class="trap">
+        <span class="trap-tag">Third</span>
+        <h4>It remembered a place that no longer exists</h4>
+        <p>You can drag the panel, and where you drop it is remembered. Drag it onto an external display, unplug that display later, and it is now sitting somewhere you cannot see.</p>
+        <p class="fix">Its only control — "reset position", in the right-click menu — is on the panel itself. Invisible means unclickable, which means unrecoverable from inside the app. The fix is to check a remembered position against the screens that currently exist before using it, and throw it away if no real part of the panel would land on one. Check again whenever a display is plugged or unplugged.</p>
+      </div>
+
+      <div class="trap">
+        <span class="trap-tag">Fourth</span>
+        <h4>All tests green, on code nobody runs</h4>
+        <p>One function turned a percentage into one of those eight-block progress bars. Thoroughly tested, green throughout. It turned out the panel draws its bar with entirely different code, and that well-tested function was never called by anything on screen.</p>
+        <p class="fix">More tests do not fix this. The only check that works is to search for callers of the function in the code that actually runs; no hits means you are testing something dead. The habit that goes with it: break the production code on purpose and see whether the suite turns red. A test that has never failed has never been shown to do anything.</p>
+      </div>
+
+      <h2>The part that ate the most time was alignment</h2>
+
+      <p>Two lines, each ending in a countdown: <code>2h13m</code> and <code>6d11h</code>, followed by the same two words. They would not line up.</p>
+
+      <figure class="shot">
+        <img src="images/codex-hud-closeup.png" alt="Both countdown lines ending in the same column">
+        <figcaption>Both rows now end in exactly the same column</figcaption>
+      </figure>
+
+      <p>The reason is precise. Every digit in this typeface is the same width, which is a gift. The letters are not. <code>m</code> is 9.42 wide, <code>h</code> is 6.38, <code>d</code> is 6.17. The two rows use different letters, so everything after the first letter sits somewhere different on each line.</p>
+
+      <p>I tried the obvious fix first: pad every letter out to the width of the widest one. Character by character it lined up perfectly, and it also opened a gap on both sides of every letter, which looked worse than the problem. Shown to the person using it, the verdict was that it was ugly. Scrapped.</p>
+
+      <p>What shipped does the opposite. Digits and letters are set solid with nothing between them, and the width difference between the two rows is pushed entirely into the single space that already sat before the trailing words. The rows end in the same place and stay tight in the middle.</p>
+
+      <p>One trap here too: the property that adds letter spacing applies to <strong>every character</strong> in the range you set it on. I needed 3.25 points of padding, put it on a five-character run, and got 16 points. An assertion measuring the rendered width caught it the same minute.</p>
+
+      <h2>Take it</h2>
+
+      <p>The code is on GitHub under MIT. Besides the panel, the repository has three documents: one covering only how to ask for the limits (useful without installing anything), one on how the panel is put together, and one listing nine pitfalls with symptoms, causes and how to reproduce each.</p>
+
+      <p>One warning. Every path, method name and field name above is internal to the Codex desktop app. None of it is a published interface and any release can change it. I verified against codex-cli 0.153.0 in September 2026. If you build on it, leave yourself room: ignore fields you do not recognise, survive a missing one, and show "could not read this" rather than a number that is wrong.</p>
+
+    </div>
+
+    <footer>
+      <p>Luka</p>
+    </footer>
+
+  </div>
+
+</body>
+</html>

@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Codex 额度浮窗 — Luka</title>
+  <link rel="stylesheet" href="../../style.css">
+  <link rel="alternate" hreflang="zh-CN" href="https://lukalearnscode.github.io/zh/projects/codex-usage-hud.html">
+  <link rel="alternate" hreflang="en" href="https://lukalearnscode.github.io/projects/codex-usage-hud.html">
+  <style>
+    /* Scoped to this page only. Global style.css untouched. Colours reuse the site palette variables. */
+    .shot { margin: 1.8rem 0; }
+    .shot img { width: 100%; display: block; border-radius: 4px; border: 1px solid var(--border); }
+    .shot figcaption { font-size: 0.9rem; color: var(--dim); margin-top: 0.6rem; line-height: 1.6; }
+    .trap { border: 1px solid var(--border); border-radius: 3px; padding: 1.05rem 1.2rem; margin: 1.3rem 0; background: rgba(0,0,0,0.02); }
+    .trap .trap-tag { font-size: 0.85rem; font-style: italic; color: var(--hover); }
+    .trap h4 { font-size: 1.1rem; font-weight: 700; margin: 0.15rem 0 0.5rem; }
+    .single-content .trap p { font-size: 0.97rem; line-height: 1.65; margin-bottom: 0.55rem; }
+    .single-content .trap p:last-child { margin-bottom: 0; }
+    .single-content .trap .fix { color: var(--dim); }
+    .steps { margin: 1.5rem 0 2rem; border-top: 1px solid var(--border); }
+    .step-row { display: flex; gap: 1.1rem; padding: 0.8rem 0; border-bottom: 1px solid var(--border); }
+    .step-num { flex: 0 0 1.8rem; font-style: italic; font-weight: 700; color: var(--hover); font-size: 1.2rem; line-height: 1.4; }
+    .step-body { flex: 1; }
+    .step-name { font-weight: 700; font-size: 1.08rem; }
+    .step-out { font-size: 0.95rem; color: var(--dim); line-height: 1.6; }
+    .single-content pre { background: rgba(0,0,0,0.16); border: 1px solid var(--border); border-radius: 3px; padding: 0.9rem 1.1rem; overflow-x: auto; font-size: 0.9rem; line-height: 1.6; }
+    .single-content code { font-size: 0.92em; }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+
+    <header>
+      <nav>
+        <a href="../index.html" class="site-name">Luka</a>
+        <a href="../posts/index.html">文章</a>
+        <a href="index.html">项目</a>
+        <span class="lang-switch"><a href="../../projects/codex-usage-hud.html" lang="en">EN</a> / <span class="current">中文</span></span>
+      </nav>
+    </header>
+
+    <div class="single-header">
+      <h1>Codex 额度浮窗</h1>
+    </div>
+
+    <div class="single-content">
+
+      <p>Codex 有两个额度窗口，一个按 5 小时算，一个按周算。问题是它平时不告诉你还剩多少，等你知道的时候，通常是它已经用完、活干到一半停下来了。</p>
+
+      <p>所以我做了个小浮窗，贴在 Codex 窗口的右下角，两行字，写着两个窗口各用掉多少、多久之后重置。切到别的应用它就自己消失。</p>
+
+      <figure class="shot">
+        <img src="../../projects/images/codex-hud-context.png" alt="浮窗停在 Codex 窗口右下角">
+        <figcaption>它就长这样，两行，不占地方，Codex 不在前台时看不见</figcaption>
+      </figure>
+
+      <p>东西本身不复杂，一个下午的事。这一页真正想写的是另一半：怎么问到这个数，以及做的过程中撞上的几堵墙。代码已经开源，地址在最下面。</p>
+
+      <h2>数从哪来</h2>
+
+      <p>这是整件事里唯一别处搜不到的部分，也是最值得单独拿走的部分。</p>
+
+      <p>Codex 的桌面应用里自带了一个小程序，可以把它理解成一个问讯处：它就在你电脑上，而且它已经认识登录着的你。你不需要出示任何证件，直接问它「我还剩多少额度」，它就会回答。</p>
+
+      <p>这一点很关键。另一条看起来更省事的路，是直接去翻 Codex 存在硬盘上的登录凭证文件，自己解析里面的令牌。那条路我没走，也不建议任何人走：你一旦碰了别人的凭证，就得对它负责，而且那个文件的格式哪天一改，你的东西就全废了。走问讯处这条路，凭证从头到尾不经你的手。</p>
+
+      <p>对话过程一共三句话，一句一行：</p>
+
+      <div class="steps">
+        <div class="step-row">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <div class="step-name">先打招呼</div>
+            <div class="step-out">发一条 <code>initialize</code>，带一个编号，然后等它用同一个编号回话。</div>
+          </div>
+        </div>
+        <div class="step-row">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <div class="step-name">回一句「知道了」</div>
+            <div class="step-out">发 <code>initialized</code>，不带编号，也没人回你。但这句不能省，省了后面就没下文。</div>
+          </div>
+        </div>
+        <div class="step-row">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <div class="step-name">问正事</div>
+            <div class="step-out">发 <code>account/rateLimits/read</code>，它把两个窗口的数据一起给你。</div>
+          </div>
+        </div>
+      </div>
+
+      <p>回来的数据里有两组，一组是 5 小时窗口，一组是一周窗口。有个地方容易踩：这两组的名字叫 <code>primary</code> 和 <code>secondary</code>，听起来像「主要的」和「次要的」，但那只是排位，不是含义。真正决定谁是谁的，是里面那个「窗口有多少分钟」的字段，300 就是 5 小时，10080 就是一周。照名字认，哪天顺序一换你就显示反了。</p>
+
+      <p>我把这段单独写成了一个不到四十行的脚本，不依赖任何东西，跑一下就能在终端里看到自己的额度：</p>
+
+      <pre>python3 examples/read_rate_limits.py
+
+ 5-hour  ████████  100.0%  resets in 1h42m
+ weekly  ████░░░░   47.0%  resets in 6d11h</pre>
+
+      <p>如果你只是想知道自己还剩多少，到这里就够了，剩下的都是我给它套的壳。</p>
+
+      <h2>一件绕不开的事</h2>
+
+      <p>我原本想做成「打开 Codex 它才启动」，这样最干净。后来发现做不到，原因很简单：如果这个程序根本没在运行，就没有任何东西能知道你刚打开了 Codex。想监听这件事，就得有个东西一直醒着。</p>
+
+      <p>所以最后是这样：开机后它就在后台待着，不占 Dock，也不占菜单栏，你平时完全看不见它。只有当 Codex 切到前台，浮窗才出现。从使用者的角度看，效果和「打开 Codex 才启动」一模一样，代价是 35 MB 内存。</p>
+
+      <h2>撞过的墙</h2>
+
+      <div class="trap">
+        <span class="trap-tag">第一堵</span>
+        <h4>问了一句，对方没回，然后就永远停在那了</h4>
+        <p>浮窗上的数字不再更新。没有报错，没有重连，也没有崩溃，就是一直显示着几小时前的数。</p>
+        <p>原因是这样：程序里有个标记，记着「我已经问出去一个问题，还在等答案」，收到答案就把标记清掉。同时为了不让问题堆积，只要这个标记还在，新的询问就直接跳过。这套逻辑本身没错，但它假设了答案一定会来。要是那句话石沉大海，标记永远清不掉，之后每一次询问都被自己跳过，连每 60 秒那次兜底也不例外。而对方的程序还活着，所以「对方挂了」的处理也不会触发。整条路全堵死，界面上却什么都看不出来。</p>
+        <p class="fix">改法是给每次询问加一个 15 秒的闹钟，响了就把整条连接拆掉重连。有意思的是复现它很麻烦：我先想用「把对方进程冻住」来模拟，结果冻住的进程不再读管道，我这边一写就失败，反而触发了正常的重连。真正能复现的，只有一个假的问讯处：它收下你的问题，然后什么都不说。</p>
+      </div>
+
+      <div class="trap">
+        <span class="trap-tag">第二堵</span>
+        <h4>浮窗跑到屏幕外面去了</h4>
+        <p>macOS 上查窗口位置和摆窗口位置，用的是两套上下颠倒的坐标：一套原点在屏幕左上角，往下越来越大；另一套原点在左下角，往上越来越大。中间要换算。</p>
+        <p class="fix">换算只能用主屏幕的高度。有两种写法看着都对，在单显示器上也确实都对：一种是取所有屏幕里最高的那个，另一种是取「当前那块屏幕」。等哪天有人把外接显示器摆在笔记本上方，第一种就整体偏掉一个屏幕的高度；第二种更麻烦，它会随着你把窗口拖到哪块屏幕而变。这种错在自己机器上永远发现不了。</p>
+      </div>
+
+      <div class="trap">
+        <span class="trap-tag">第三堵</span>
+        <h4>它记住了一个已经不存在的位置</h4>
+        <p>浮窗可以拖，拖完位置会被记下来。要是你在外接显示器上拖过它，之后把显示器拔了，它就停在一个你看不到的地方。</p>
+        <p class="fix">而它唯一的控制入口——右键菜单里的「恢复默认位置」——就在浮窗身上。看不见就点不到，等于从界面上再也救不回来。改法是每次要用记住的位置之前先检查一遍，确认它至少有一部分落在现有的屏幕上，不然就丢掉这个记录回到默认位置。显示器插拔的时候也要再检查一次。</p>
+      </div>
+
+      <div class="trap">
+        <span class="trap-tag">第四堵</span>
+        <h4>测试全绿，但测的是没人用的那份代码</h4>
+        <p>有个函数专门负责把百分比画成八个方块那样的进度条，测试写得很全，一直是绿的。后来才发现，浮窗上真正的进度条是另一套代码画的，那个被测得好好的函数，界面上一次都没调用过。</p>
+        <p class="fix">这类事没法靠「多写测试」解决。唯一有效的检查是：搜一下这个函数在真正干活的代码里被谁调用了，一个都搜不到，就说明你在测一段死代码。另一个配套的习惯是故意把代码改坏，看测试会不会变红——从来没红过的测试，等于从来没被证明有用。</p>
+      </div>
+
+      <h2>最费时间的居然是对齐</h2>
+
+      <p>浮窗上两行字，右边是「还有多久重置」，写成 <code>2h13m 后重置</code> 和 <code>6d11h 后重置</code>。这两行怎么都对不齐。</p>
+
+      <figure class="shot">
+        <img src="../../projects/images/codex-hud-closeup.png" alt="两行倒计时的末尾严格对齐">
+        <figcaption>现在两行的「后重置」严格落在同一列上</figcaption>
+      </figure>
+
+      <p>查下来原因很具体：这个字体里所有数字都是一样宽的，很省心；但字母不是。<code>m</code> 宽 9.42，<code>h</code> 宽 6.38，<code>d</code> 宽 6.17。上下两行用的字母不一样，从第一个字母往后的每一个字，位置就都错开了。</p>
+
+      <p>我先试了个看起来最对的办法：把每个字母都撑到最宽那个的宽度。逐个字符确实对齐了，但每个字母左右都被撑开一道缝，看着比原来还乱。这一版给用的人看了，反馈是不好看，于是推翻。</p>
+
+      <p>最后的做法反过来：数字和字母贴死不留空隙，两行宽度的那点差额，全部塞进「后重置」前面那个本来就有的空格里。两行结尾于是落在同一个位置，中间又是紧凑的。</p>
+
+      <p>这一段还顺手撞了个坑：给文字加间距的那个属性，是加在你指定范围内的<strong>每一个字符</strong>上的。我要补 3.25 点，加在一段五个字符的文字上，实际补出去 16 点。好在有一条断言在量渲染后的实际宽度，当场就报出来了。</p>
+
+      <h2>拿去用</h2>
+
+      <p>代码在 GitHub 上，MIT 协议。仓库里除了这个浮窗本身，还有三份文档：一份只讲怎么问到额度（不用装这个应用也能用），一份讲浮窗是怎么搭的，一份是九个坑各自的症状、原因和复现方法。</p>
+
+      <p>需要提醒一句：上面提到的路径、方法名、字段名，全都是 Codex 桌面应用内部的东西，不是公开接口，随时可能变。我验证的版本是 codex-cli 0.153.0，2026 年 9 月。照着做的时候记得留一手：不认识的字段直接忽略，字段缺了要能兜住，宁可显示一句「读不到」，也别显示一个错的数。</p>
+
+    </div>
+
+    <footer>
+      <p>Luka</p>
+    </footer>
+
+  </div>
+
+</body>
+</html>
