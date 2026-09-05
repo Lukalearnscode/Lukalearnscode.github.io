@@ -96,10 +96,60 @@ Result:  Consumes {green}40{/green} Energy  ← restored automatically</pre>
       <p>Each regression test in the repository exists because a bug like that
       one reached a real file first. They were not written for coverage.</p>
 
+      <h2>Three more lessons, one summer later</h2>
+
+      <p>The tool kept running on real files through the summer, and each of
+      these bit me in turn.</p>
+
+      <p><strong>A whitelist protects you from false alarms, and it also
+      blinds you.</strong> The tool knows about forty-odd standard tag names
+      such as <code>[color]</code> and <code>[b]</code>. It checks those and
+      ignores everything else, which is what keeps <code>[TODO]</code> and
+      <code>[1]</code> from setting off the alarm. But games invent their own
+      tags. One file used <code>[gold]</code>, <code>[jitter]</code> and half a
+      dozen others, none of them on the list, so none of them were checked.
+      When I measured, the tool was catching only fifteen to twenty per cent
+      of the custom tags that went missing, while its report still said
+      "count, content, order and nesting verified". The fix is small: any name
+      that appears as both <code>[x]</code> and <code>[/x]</code> anywhere in
+      the batch is a tag. <code>[TODO]</code> has no <code>[/TODO]</code>, so
+      it stays out.</p>
+
+      <p><strong>A variable with a sentence inside it.</strong> Some engines
+      write <code>{Gems:plural:Gem|Gems}</code>, and the game picks "Gem" or
+      "Gems" at runtime. The part after the colon is text, and the translator
+      is supposed to translate it. The tool treated the whole thing as one
+      fixed token, so every translated option became a "tag content changed"
+      error. On one game's official translation that was over eight hundred
+      errors per direction, and when I sampled them, not one was real. Now
+      only the name and the type count as the tag's identity. And when a
+      Chinese translation drops the whole thing, because Chinese has no
+      plurals, that is a warning to glance at, not an error that blocks
+      delivery.</p>
+
+      <p><strong>Two kinds of "the order changed".</strong> memoQ's own tags
+      are anchored to a position in the sentence; if they swap places,
+      something moved that should not have. But a tag like
+      <code>[gold]Gold[/gold]</code> wraps a word, and when Chinese puts that
+      word somewhere else in the sentence, the tag goes with it. That is a
+      correct translation. The tool used to call both cases the same error.
+      Now the second is a warning, and whether the tag still wraps the right
+      word is left to the side-by-side table.</p>
+
+      <p>That table grew too. It started with one automatic flag, mismatched
+      numbers. It now has five: mismatched numbers, a target pair that wraps
+      nothing, a glossary term missing from the target span, a glossary term
+      that crept into the target span from outside, and a span that is much
+      longer or shorter than the source suggests. The last three need a
+      glossary. No flag still does not mean pass. It means the machine has
+      nothing to say, and a person should read that row.</p>
+
       <h2>Stack</h2>
 
       <p>Python, lxml for XML parsing, any OpenAI-compatible model for
-      placement. No framework. Runs from one command.</p>
+      placement. No framework. Runs from one command. Verification needs no
+      API key and no memoQ: hand it a JSON list of source and target pairs and
+      it checks those.</p>
 
     </div>
 
