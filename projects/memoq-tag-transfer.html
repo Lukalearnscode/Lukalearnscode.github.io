@@ -49,6 +49,62 @@
 Target:  Consumes 40 Energy                ← markup gone after translation
 Result:  Consumes {green}40{/green} Energy  ← restored automatically</pre>
 
+      <h2>Spot the error</h2>
+
+      <p>Think that was easy? Here are five short segments. Each one looks
+      fine. Each one is wrong. Try to find the problem before you read the
+      answer. The sixth is a trick: it is not wrong, and the tool knows.</p>
+
+      <pre>Source:  造成&lt;color=#ff0000&gt;150&lt;/color&gt;点伤害
+Target:  Deals 150 &lt;color=#ff0000&gt;Damage&lt;/color&gt;</pre>
+
+      <p>The red was on the number. Now it is on the word "Damage". Same tags,
+      same count, same order, so every counting check passes. The
+      side-by-side table catches it: the source span holds "150", the target
+      span holds no number at all.</p>
+
+      <pre>Source:  队伍会跟随&lt;color=#ffe2af&gt;当前队长&lt;/color&gt;的移动
+Target:  The party follows the current &lt;color=#ffe2af&gt;leader&lt;/color&gt;</pre>
+
+      <p>"Current" fell outside the highlight. Four Chinese characters went
+      in, one English word came out. The table flags the span as probably
+      shrunk.</p>
+
+      <pre>Source:  使&lt;style="q5"&gt;燃烧&lt;/style&gt;的时间延长
+Target:  extends &lt;style="q5"&gt;&lt;/style&gt;Burning duration</pre>
+
+      <p>Both tags are there, in the right order, legally nested. Nothing is
+      between them. "Burning" sits just after the closing tag. The table flags
+      an empty span.</p>
+
+      <pre>Source:  获得[gold]护盾[/gold]
+Target:  Gain Shield</pre>
+
+      <p><code>[gold]</code> is not on any standard list of tags, so a checker
+      that only knows the standard list never sees it. This one notices that
+      <code>[gold]</code> and <code>[/gold]</code> both appear somewhere in
+      the batch, decides the name is a tag, and reports two tags missing.</p>
+
+      <pre>Source:  [gold]金币[/gold]和[blue]宝石[/blue]
+Target:  [gold]Gold[/blue] and [blue]Gems[/gold]</pre>
+
+      <p>The same four tags on both sides, so a count passes. But they are
+      crossed: gold is closed by blue. A game engine draws that wrong, or
+      crashes on it.</p>
+
+      <pre>Source:  Pick {Amount:plural:an item|{} items} to sell.
+Target:  选择{Amount}件物品出售。</pre>
+
+      <p>The trick one. The English variable picks "an item" or "N items" at
+      runtime. Chinese has no plural, so the translator folded it down to
+      <code>{Amount}</code>. A strict checker calls that a lost tag. This tool
+      gives a warning to glance at, not an error. On one game's official
+      translation, that single difference was over eight hundred false
+      alarms.</p>
+
+      <p>All six are in the repository as a runnable example. One command
+      produces the report.</p>
+
       <h2>How it works</h2>
 
       <p>Unzip the memoQ file and read its XML. Classify every inline tag by

@@ -41,6 +41,42 @@
 Target:  Consumes 40 Energy                ← 翻译后标记丢了
 Result:  Consumes {green}40{/green} Energy  ← 自动放回去</pre>
 
+      <h2>找错游戏</h2>
+
+      <p>觉得刚才那个太简单？下面五段短句，每一段看起来都没问题，每一段都是错的。先自己找，再看答案。第六段是个陷阱：它不是错，工具也知道。</p>
+
+      <pre>Source:  造成&lt;color=#ff0000&gt;150&lt;/color&gt;点伤害
+Target:  Deals 150 &lt;color=#ff0000&gt;Damage&lt;/color&gt;</pre>
+
+      <p>红色本来标在数字上，现在标到了「Damage」这个词上。标记一样，数量一样，顺序一样，所有数数的检查都过。对照表抓住了它：原文标记里是「150」，译文标记里一个数字都没有。</p>
+
+      <pre>Source:  队伍会跟随&lt;color=#ffe2af&gt;当前队长&lt;/color&gt;的移动
+Target:  The party follows the current &lt;color=#ffe2af&gt;leader&lt;/color&gt;</pre>
+
+      <p>「current」掉到了高亮外面。进去四个汉字，出来一个英文词。对照表提示：这段高亮很可能缩短了。</p>
+
+      <pre>Source:  使&lt;style="q5"&gt;燃烧&lt;/style&gt;的时间延长
+Target:  extends &lt;style="q5"&gt;&lt;/style&gt;Burning duration</pre>
+
+      <p>两个标记都在，顺序对，嵌套也合法，可中间是空的，「Burning」紧贴在闭合标记后面。对照表提示：译文标记里是空的。</p>
+
+      <pre>Source:  获得[gold]护盾[/gold]
+Target:  Gain Shield</pre>
+
+      <p><code>[gold]</code> 不在任何标准标记名单上，只认名单的检查器根本看不见它。这个工具发现整批文字里 <code>[gold]</code> 和 <code>[/gold]</code> 都出现过，就把这个名字当标记，报：丢了两个标记。</p>
+
+      <pre>Source:  [gold]金币[/gold]和[blue]宝石[/blue]
+Target:  [gold]Gold[/blue] and [blue]Gems[/gold]</pre>
+
+      <p>两边都是这四个标记，数数能过。可它们交叉了：gold 被 blue 关掉了。游戏引擎画这一句会画错，或者直接崩。</p>
+
+      <pre>Source:  Pick {Amount:plural:an item|{} items} to sell.
+Target:  选择{Amount}件物品出售。</pre>
+
+      <p>陷阱在这。英文变量运行时从「an item」和「N items」里选一个显示。中文没有单复数，译员把它收成了 <code>{Amount}</code>。死板的检查器会说标记丢了。这个工具只给一句提醒，不当错误。在一款游戏的官方译文上，这一条差别就是八百多条假警报。</p>
+
+      <p>这六段都放在仓库里当示例，一条命令就能跑出报告。</p>
+
       <h2>它怎么工作</h2>
 
       <p>memoQ 是翻译行业常用的软件，它的项目文件其实是个压缩包。这个工具把压缩包拆开，读出里面的文字，给每个标记编上号，先换成占位记号，再把原文和译文一起交给 AI，让它把记号插回该在的位置。之后逐项验证，最后生成一份翻译行业的通用交换文件（TMX），导回 memoQ。</p>
