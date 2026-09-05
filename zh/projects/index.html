@@ -22,46 +22,39 @@
     </header>
 
     <h1 class="page-title">项目</h1>
-    <div class="projects-list">
-
-    <div class="list-item">
-      <h3><a href="codex-usage-hud.html">Codex 额度浮窗</a></h3>
-      <p>Codex 不告诉你额度还剩多少，等你知道通常已经用完了。做了个浮窗贴在它窗口角上，两行字。东西一个下午就做完，这一页写的是另一半：怎么问到这个数（不用装这个应用也能问），以及一句问出去没人回、界面就能永远停在旧数字上不报错这类事。已开源。</p>
-    </div>
-
-    <div class="list-item">
-      <h3><a href="agent-orchestration.html">Claude &amp; Codex 协作台</a></h3>
-      <p>让 Claude 和 Codex 互相盯着干活，全程没人看着：一个写，另一个有权打回，最后由谁都改不了的检查程序说了算。接起来只花了一个下午，这一页写的是另一半——这么一条流水线，有多少种办法能给你亮一盏绿灯，而底下的活其实压根没干。不开源。</p>
-    </div>
-
-    <div class="list-item has-thumb">
-      <div class="entry">
-      <h3><a href="localization-pipeline.html">译制工坊</a></h3>
-      <p>一间用 AI 做翻译的工坊，专做中英互译的游戏和创意文本：规则按项目现场定制，翻译和审校交给互不通气的几个 AI 分工互查，最后放行的是一道不听 AI 自夸的机器检查。代码不开源，这一页讲的是设计本身。</p>
-          </div>
-    </div>
-
-    <div class="list-item has-thumb">
-      <div class="entry">
-      <h3><a href="memoq-tag-transfer.html">memoQ Tag Transfer</a></h3>
-      <p>一个小工具：把游戏文字里的格式标记放回译文，还要证明每个标记都放对了地方。真正有意思的问题不是怎么放，而是怎么抓出那种所有机械检查全绿、结果照样是错的文件。开源，MIT 协议。</p>
-          </div>
-    </div>
-
-    <div class="list-item has-thumb">
-      <div class="entry">
-      <h3><a href="huka-run.html">Huka Run</a></h3>
-      <p>一个能直接在浏览器里玩的卡通渲染快艇原型，场景是 Huka 瀑布风格的绿松石峡谷。参考并改编自 <a href="https://github.com/Vyom-26/Wave-Racer">Vyom-26
-      的 Wave Racer</a>：河道、峡谷岩壁、配色、倒计时界面和单艇玩法，都重做了一遍。</p>
-          </div>
-    </div>
-
+    <div class="projects-grid">
+      <article class="proj is-featured">
+        <span class="meta">开源工具</span>
+        <h3><a href="memoq-tag-transfer.html">memoQ Tag Transfer</a></h3>
+        <p>把游戏文字里的格式标记放回译文，再证明每一个都放对了地方。</p>
+      </article>
+      <article class="proj">
+        <span class="meta">翻译流程</span>
+        <h3><a href="localization-pipeline.html">译制工坊</a></h3>
+        <p>用几个互不通气的 AI 做中英游戏翻译，最后放行的是一道不信 AI 自夸的机器检查。</p>
+      </article>
+      <article class="proj">
+        <span class="meta">开源工具</span>
+        <h3><a href="codex-usage-hud.html">Codex 额度浮窗</a></h3>
+        <p>Codex 不告诉你额度还剩多少，这个浮窗贴在它窗口角上，两行字说清。</p>
+      </article>
+      <article class="proj">
+        <span class="meta">工作流</span>
+        <h3><a href="agent-orchestration.html">Claude &amp; Codex 协作台</a></h3>
+        <p>让 Claude 写、Codex 打回、检查程序说了算，这一页讲它有多少种办法给你亮假绿灯。</p>
+      </article>
+      <article class="proj">
+        <span class="meta">游戏原型</span>
+        <h3><a href="huka-run.html">Huka Run</a></h3>
+        <p>能直接在浏览器里玩的卡通快艇原型，绿松石峡谷，改自 <a href="https://github.com/Vyom-26/Wave-Racer">Wave Racer</a>。</p>
+      </article>
     </div>
     <!-- TEMPLATE: copy this block for each new project
-    <div class="list-item">
+    <article class="proj">
+      <span class="meta">类型</span>
       <h3><a href="your-project.html">下一个项目</a></h3>
       <p>一句话介绍这个项目是什么。</p>
-    </div>
+    </article>
     -->
 
     <footer>

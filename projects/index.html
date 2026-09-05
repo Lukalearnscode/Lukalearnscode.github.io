@@ -22,60 +22,39 @@
     </header>
 
     <h1 class="page-title">Projects</h1>
-    <div class="projects-list">
-
-    <div class="list-item">
-      <h3><a href="codex-usage-hud.html">Codex Usage HUD</a></h3>
-      <p>Codex does not tell you how much quota is left; you find out when it runs out. This is a small panel in the corner of its window. The panel took an afternoon — this page is about the other half: how to ask for the number without touching any credential, and how a single unanswered request can freeze a client forever without raising anything. Open source.</p>
-    </div>
-
-    <div class="list-item">
-      <h3><a href="agent-orchestration.html">Agent Orchestration</a></h3>
-      <p>Claude and Codex run against each other unattended: one writes, the
-      other is allowed to reject it, and a verifier neither of them can touch
-      decides whether it ships. Wiring them together took
-      an afternoon. This page is the other part — the seven ways a pipeline like
-      this hands you a green light over work that was never done. Not open source.</p>
-    </div>
-
-    <div class="list-item has-thumb">
-      <div class="entry">
-      <h3><a href="localization-pipeline.html">Localization Pipeline</a></h3>
-      <p>An AI localization pipeline for EN↔ZH game and creative text:
-      per-project prompt generation, multi-model translation, a three-stage
-      review architecture, and mechanical gates that do not take the model's
-      word for anything. Not open source — the page explains the design
-      itself.</p>
-          </div>
-    </div>
-
-    <div class="list-item has-thumb">
-      <div class="entry">
-      <h3><a href="memoq-tag-transfer.html">memoQ Tag Transfer</a></h3>
-      <p>A CLI tool that restores inline formatting tags to translated text, and
-      proves they landed on the right words. The interesting problem was not
-      placing the tags — it was catching the case where every mechanical check
-      passes and the output is still wrong. Open source, MIT.</p>
-          </div>
-    </div>
-
-    <div class="list-item has-thumb">
-      <div class="entry">
-      <h3><a href="huka-run.html">Huka Run</a></h3>
-      <p>A playable cel-shaded riverboat prototype set in a Huka Falls-inspired
-      turquoise canyon. This is a personal modification inspired by and adapted
-      from <a href="https://github.com/Vyom-26/Wave-Racer">Wave Racer by Vyom-26</a>:
-      I reworked the river, canyon walls, palette, countdown HUD, and one-boat
-      play loop.</p>
-          </div>
-    </div>
-
+    <div class="projects-grid">
+      <article class="proj is-featured">
+        <span class="meta">Open source</span>
+        <h3><a href="memoq-tag-transfer.html">memoQ Tag Transfer</a></h3>
+        <p>Puts inline formatting tags back into translated text, then proves each one landed on the right word.</p>
+      </article>
+      <article class="proj">
+        <span class="meta">Translation workflow</span>
+        <h3><a href="localization-pipeline.html">Localization Pipeline</a></h3>
+        <p>Several AIs that never talk to each other translate game text between English and Chinese. A check that ignores their self-praise has the final say.</p>
+      </article>
+      <article class="proj">
+        <span class="meta">Open source</span>
+        <h3><a href="codex-usage-hud.html">Codex Usage HUD</a></h3>
+        <p>Codex will not tell you how much quota is left. This two-line panel in the corner of its window will.</p>
+      </article>
+      <article class="proj">
+        <span class="meta">Workflow</span>
+        <h3><a href="agent-orchestration.html">Agent Orchestration</a></h3>
+        <p>Claude writes, Codex may reject, and a verifier neither can touch decides. The page is about the ways that hands you a false green light.</p>
+      </article>
+      <article class="proj">
+        <span class="meta">Game prototype</span>
+        <h3><a href="huka-run.html">Huka Run</a></h3>
+        <p>A cel-shaded riverboat prototype you can play in the browser, adapted from <a href="https://github.com/Vyom-26/Wave-Racer">Wave Racer</a>.</p>
+      </article>
     </div>
     <!-- TEMPLATE: copy this block for each new project
-    <div class="list-item">
+    <article class="proj">
+      <span class="meta">Type</span>
       <h3><a href="your-project.html">Your next project</a></h3>
-      <p>A short description of what this project is.</p>
-    </div>
+      <p>One sentence on what this project is.</p>
+    </article>
     -->
 
     <footer>

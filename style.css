@@ -18,6 +18,7 @@
   --font-en: "Times New Roman", Times, serif;
   --font-body: 'Avenir Next', 'PingFang SC', 'Helvetica Neue', sans-serif;
   --font-zh: 'Noto Serif SC', 'Songti SC', 'STSong', serif;
+  --home-shift: 160px;   /* home page: the greeting is centred, the sections below are indented to sit under it; 0 on phones */
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -126,10 +127,12 @@ nav .lang-switch a[lang="zh-CN"] { font-family: var(--font-zh); }
   display: block;
   min-height: 0;
   padding: 72px 0 54px;
+  text-align: center;
 }
 
 .hero h1 {
   max-width: 820px;
+  margin: 0 auto;
   color: var(--text);
   font: 600 clamp(2.9rem, 5.7vw, 5.2rem)/.96 var(--font-display);
   font-style: italic;
@@ -149,7 +152,7 @@ nav .lang-switch a[lang="zh-CN"] { font-family: var(--font-zh); }
 
 .hero .tagline {
   max-width: 330px;
-  margin-top: 22px;
+  margin: 34px auto 0;
   padding-bottom: 9px;
   color: var(--dim);
   font: italic 16px/1.45 var(--font-display);
@@ -157,8 +160,9 @@ nav .lang-switch a[lang="zh-CN"] { font-family: var(--font-zh); }
 
 .home-section {
   display: block;
-  padding: 22px 0 25px;
-  border-top: 1px solid var(--border);
+  padding: 24px 0 27px;
+  padding-left: var(--home-shift);
+  border-top: 0;   /* no rule lines here: once the block is indented they line up with nothing */
 }
 
 .home-section::before {
@@ -186,8 +190,9 @@ nav .lang-switch a[lang="zh-CN"] { font-family: var(--font-zh); }
 
 .contact {
   display: block;
-  padding: 22px 0 66px;
-  border-top: 1px solid var(--border);
+  padding: 24px 0 66px;
+  padding-left: var(--home-shift);
+  border-top: 0;
 }
 
 .contact h2 {
@@ -338,6 +343,75 @@ nav .lang-switch a[lang="zh-CN"] { font-family: var(--font-zh); }
 }
 
 .projects-list .list-item:first-child h3 { font-size: 24px; }
+
+/* Projects index: two per row, one featured on top */
+
+.projects-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  column-gap: 52px;
+  border-top: 1px solid var(--border);
+}
+
+.proj {
+  position: relative;
+  padding: 27px 0 31px;
+  border-bottom: 1px solid var(--border);
+  transition: padding-left .25s ease;
+}
+
+.proj:hover { padding-left: 12px; }   /* same slide as the old list */
+
+.proj.is-featured {
+  grid-column: 1 / -1;
+  padding: 36px 0 42px;
+}
+
+.proj .meta {
+  display: block;
+  margin-bottom: 12px;
+  color: var(--muted);
+  font: 11px/1.2 var(--font-body);
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  transition: color .22s ease;
+}
+
+.proj h3 {
+  margin-bottom: 9px;
+  font: 500 25px/1.1 var(--font-display);
+  letter-spacing: -.03em;
+}
+
+.proj.is-featured h3 { font-size: 36px; }
+
+.proj h3 a {
+  color: var(--text);
+  text-decoration: none;
+  transition: color .22s ease;
+}
+
+.proj:hover h3 a,
+.proj:hover .meta { color: var(--accent); }
+
+.proj p {
+  max-width: 44ch;
+  color: var(--dim);
+  font-size: 15px;
+  line-height: 1.65;
+}
+
+.proj.is-featured p { max-width: 58ch; font-size: 16px; }
+
+.proj p a {
+  color: var(--accent);
+  text-decoration-color: rgba(217, 149, 127, .36);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 4px;
+  transition: color .22s ease, text-decoration-color .22s ease;
+}
+
+.proj p a:hover { color: var(--text); text-decoration-color: var(--accent); }
 
 /* Long-form pages */
 
@@ -598,6 +672,7 @@ html[lang="zh-CN"] blockquote,
 html[lang="zh-CN"] .home-section h2,
 html[lang="zh-CN"] .contact h2,
 html[lang="zh-CN"] .list-item h3,
+html[lang="zh-CN"] .proj h3,
 html[lang="zh-CN"] .phase-name,
 html[lang="zh-CN"] .flow-name,
 html[lang="zh-CN"] .stage-card h4,
@@ -629,10 +704,16 @@ html[lang="zh-CN"] .single-content ol { letter-spacing: .01em; }
   nav { gap: 17px; padding: 12px 13px 11px; }
   nav a { font-size: 14px; }
   nav .site-name { font-size: 19px; }
+  body { --home-shift: 0px; }
   .hero {
     min-height: 0;
     padding: 68px 0 51px;
   }
+  .proj:hover { padding-left: 0; }
+  .projects-grid { grid-template-columns: 1fr; column-gap: 0; }
+  .proj.is-featured { padding: 27px 0 31px; }
+  .proj.is-featured h3 { font-size: 27px; }
+  .proj p, .proj.is-featured p { max-width: none; font-size: 15px; }
   .hero h1 { font-size: clamp(2.8rem, 13vw, 4.4rem); }
   .hero .tagline { max-width: 300px; margin-top: 20px; font-size: 16px; }
   .home-section,
