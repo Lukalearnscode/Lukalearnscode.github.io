@@ -1,23 +1,24 @@
 @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,700&family=Noto+Serif+SC:wght@400;500;600;700&display=swap');
 
 :root {
-  --bg: #17232b;
-  --surface: #1e2c35;
-  --surface-2: #263741;
-  --text: #f2eee5;
-  --dim: #b4b9b7;
-  --muted: #7e8b91;
-  --accent: #d9957f;
-  --accent-soft: rgba(217, 149, 127, .12);
+  --bg: #303030;          /* 百草霜 */
+  --surface: #363532;     /* 灯草灰 */
+  --surface-2: #3f3f3c;   /* 油烟墨 */
+  --text: #ebe8db;        /* 胡粉 */
+  --dim: #b2ae9b;         /* 深银灰 */
+  --muted: #757570;       /* 承德灰 */
+  --accent: #da9583;      /* 蛤蜊粉 */
+  --accent-soft: rgba(218, 149, 131, .12);
   --warm: #d8c5a4;
-  --border: rgba(224, 231, 230, .13);
-  --border-strong: rgba(224, 231, 230, .22);
-  --thumb-bg: #1c2b33;
+  --border: rgba(235, 232, 219, .13);
+  --border-strong: rgba(235, 232, 219, .22);
+  --thumb-bg: #343431;
   --shadow: 0 24px 70px rgba(4, 5, 9, .34), 0 2px 10px rgba(4, 5, 9, .18);
   --font-display: 'Cormorant Garamond', 'Noto Serif SC', 'Songti SC', serif;
   --font-en: "Times New Roman", Times, serif;
   --font-body: 'Avenir Next', 'PingFang SC', 'Helvetica Neue', sans-serif;
   --font-zh: 'Noto Serif SC', 'Songti SC', 'STSong', serif;
+  --arrow: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='2 7 20 10' fill='none' stroke='%23000' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M17.25 8.25 21 12m0 0-3.75 3.75M21 12H3'/%3E%3C/svg%3E");   /* Heroicons arrow-long-right (MIT), viewBox cropped to the glyph; colour set where it is used */
   --home-shift: 160px;   /* home page: the greeting is centred, the sections below are indented to sit under it; 0 on phones */
 }
 
@@ -32,13 +33,10 @@ html {
 body {
   position: relative;
   min-width: 320px;
+  min-height: 100vh;                         /* short pages: keep the sky photo covering the whole viewport */
   overflow-x: hidden;
   color: var(--text);
-  background:
-    radial-gradient(900px 560px at 78% -12%, rgba(217, 149, 127, .08), transparent 66%),
-    radial-gradient(680px 500px at 3% 42%, rgba(255, 255, 255, .035), transparent 70%),
-    var(--bg);
-  background-attachment: fixed;
+  background: var(--bg) url("assets/sky-b-1920.jpg") center top / cover no-repeat fixed;   /* night sky: Pexels photo, licence allows commercial use without attribution */
   font-family: var(--font-body);
   font-weight: 400;
   line-height: 1.75;
@@ -61,7 +59,7 @@ a { color: inherit; }
 
 .container {
   position: relative;
-  z-index: 1;
+  z-index: 2;
   width: min(1060px, calc(100% - 64px));
   margin: 0 auto;
 }
@@ -121,12 +119,44 @@ nav .lang-switch a[lang="zh-CN"] { font-family: var(--font-zh); }
   outline-offset: 4px;
 }
 
-/* Home */
+/* Home: one viewport, greeting centred over the sky, three cards above the peaks */
+
+body::after {                                  /* scrim over the photo: light on the home page, heavy on reading pages */
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  content: '';
+  background: rgba(48, 48, 48, .78);
+}
+
+.field {                                       /* twinkling stars + the odd meteor, drawn by field.js over the sky part of the photo */
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+}
+
+body:has(:focus-visible) .field { opacity: 0; }
+
+body.home::after {                            /* a soft dark pool behind the greeting and the cards, so the Milky Way core does not fight the text */
+  background:
+    radial-gradient(ellipse 62% 46% at 50% 44%, rgba(22, 24, 30, .58), rgba(22, 24, 30, 0) 100%),
+    linear-gradient(180deg, rgba(22, 24, 30, .42) 0%, rgba(22, 24, 30, 0) 30%, rgba(22, 24, 30, 0) 74%, rgba(22, 24, 30, .3) 100%);
+}
+
+.home-main {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: calc(100vh - 78px);
+  padding: 0 0 15vh;
+}
 
 .hero {
   display: block;
   min-height: 0;
-  padding: 72px 0 54px;
+  padding: 0;
   text-align: center;
 }
 
@@ -138,6 +168,7 @@ nav .lang-switch a[lang="zh-CN"] { font-family: var(--font-zh); }
   font-style: italic;
   letter-spacing: -.07em;
   text-wrap: balance;
+  text-shadow: 0 2px 24px rgba(0, 0, 0, .35);
 }
 
 .hero h1 .emoji {
@@ -151,67 +182,101 @@ nav .lang-switch a[lang="zh-CN"] { font-family: var(--font-zh); }
 .hero h1 .name { color: var(--accent); font-style: inherit; }
 
 .hero .tagline {
-  max-width: 330px;
-  margin: 34px auto 0;
-  padding-bottom: 9px;
-  color: var(--dim);
+  max-width: 420px;
+  margin: 28px auto 0;
+  color: var(--text);
+  opacity: .88;
   font: italic 16px/1.45 var(--font-display);
+  text-shadow: 0 1px 14px rgba(0, 0, 0, .55);
 }
 
-.home-section {
-  display: block;
-  padding: 24px 0 27px;
-  padding-left: var(--home-shift);
-  border-top: 0;   /* no rule lines here: once the block is indented they line up with nothing */
+.home-row {
+  display: flex;
+  justify-content: center;
+  margin-top: 72px;
 }
 
-.home-section::before {
-  display: none;
-}
-
-.home-section h2 {
-  font: 500 22px/1.1 var(--font-display);
-  letter-spacing: -.02em;
-}
-
-.home-section h2 a {
+.home-card {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 6px 30px;
+  border-left: 1px solid var(--border-strong);
+  color: var(--text);
   text-decoration: none;
+}
+
+.home-card:first-child { border-left: 0; }
+
+.home-card .ic {
+  flex: none;
+  width: 24px;
+  height: 24px;
+  fill: none;
+  stroke: var(--dim);
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transition: stroke .22s ease;
+}
+
+.home-card:hover .ic { stroke: var(--accent); }
+
+.card-title {
+  display: block;
+  font: 500 20px/1.15 var(--font-display);
+  text-shadow: 0 1px 12px rgba(0, 0, 0, .5);
+  letter-spacing: -.01em;
   transition: color .22s ease;
 }
 
-.home-section h2 a:hover { color: var(--accent); }
+a.home-card:hover .card-title { color: var(--accent); }
 
-.home-section p {
-  max-width: 530px;
-  margin-top: 9px;
-  color: var(--dim);
-  font-size: 14px;
-}
-
-.contact {
+.card-desc {
   display: block;
-  padding: 24px 0 66px;
-  padding-left: var(--home-shift);
-  border-top: 0;
+  max-width: 200px;
+  margin-top: 5px;
+  color: var(--dim);
+  font-size: 13.5px;
+  text-shadow: 0 1px 10px rgba(0, 0, 0, .5);
+  line-height: 1.45;
 }
 
-.contact h2 {
-  font: 500 22px/1.1 var(--font-display);
-  letter-spacing: -.02em;
-}
-
-.contact a {
+.card-arrow {
   display: inline-block;
-  margin-top: 9px;
-  width: fit-content;
+  flex: none;
+  width: 1.05em;
+  height: .525em;
+  margin-left: 22px;
+  background-color: var(--dim);
+  -webkit-mask: var(--arrow) no-repeat center / contain;
+  mask: var(--arrow) no-repeat center / contain;
+  transition: transform .22s ease, background-color .22s ease;
+}
+
+a.home-card:hover .card-arrow {
+  background-color: var(--accent);
+  transform: translateX(5px);
+}
+
+.card-links {
+  display: block;
+  margin-top: 6px;
+  color: var(--dim);
+  font-size: 15px;
+  text-shadow: 0 1px 10px rgba(0, 0, 0, .5);
+}
+
+.card-links .sep { margin: 0 .55em; }
+
+.card-links a {
   color: var(--accent);
-  font-size: 16px;
   text-decoration: none;
-  border-bottom: 1px solid rgba(217, 149, 127, .35);
+  border-bottom: 1px solid rgba(218, 149, 131, .35);
   transition: border-color .22s ease, color .22s ease;
 }
 
-.contact a:hover {
+.card-links a:hover {
   color: var(--text);
   border-color: var(--accent);
 }
@@ -272,7 +337,7 @@ nav .lang-switch a[lang="zh-CN"] { font-family: var(--font-zh); }
 .list-item p a,
 .single-content a {
   color: var(--accent);
-  text-decoration-color: rgba(217, 149, 127, .36);
+  text-decoration-color: rgba(218, 149, 131, .36);
   text-decoration-thickness: 1px;
   text-underline-offset: 4px;
   transition: color .22s ease, text-decoration-color .22s ease;
@@ -405,7 +470,7 @@ nav .lang-switch a[lang="zh-CN"] { font-family: var(--font-zh); }
 
 .proj p a {
   color: var(--accent);
-  text-decoration-color: rgba(217, 149, 127, .36);
+  text-decoration-color: rgba(218, 149, 131, .36);
   text-decoration-thickness: 1px;
   text-underline-offset: 4px;
   transition: color .22s ease, text-decoration-color .22s ease;
@@ -498,7 +563,7 @@ nav .lang-switch a[lang="zh-CN"] { font-family: var(--font-zh); }
 
 .single-content code {
   padding: 2px 6px;
-  border: 1px solid rgba(213, 226, 222, .08);
+  border: 1px solid rgba(235, 232, 219, .08);
   border-radius: 4px;
   color: var(--accent);
   background: rgba(255, 255, 255, .055);
@@ -511,7 +576,7 @@ nav .lang-switch a[lang="zh-CN"] { font-family: var(--font-zh); }
   padding: 22px 24px;
   border: 1px solid var(--border);
   border-radius: 8px;
-  color: #e1e7e5;
+  color: var(--text);
   background: var(--surface);
   box-shadow: var(--shadow);
   font: 14px/1.65 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
@@ -669,8 +734,7 @@ html[lang="zh-CN"] .page-title,
 html[lang="zh-CN"] .single-header h1,
 html[lang="zh-CN"] .single-content h2,
 html[lang="zh-CN"] blockquote,
-html[lang="zh-CN"] .home-section h2,
-html[lang="zh-CN"] .contact h2,
+html[lang="zh-CN"] .card-title,
 html[lang="zh-CN"] .list-item h3,
 html[lang="zh-CN"] .proj h3,
 html[lang="zh-CN"] .phase-name,
@@ -704,11 +768,10 @@ html[lang="zh-CN"] .single-content ol { letter-spacing: .01em; }
   nav { gap: 17px; padding: 12px 13px 11px; }
   nav a { font-size: 14px; }
   nav .site-name { font-size: 19px; }
-  body { --home-shift: 0px; }
-  .hero {
-    min-height: 0;
-    padding: 68px 0 51px;
-  }
+  body { --home-shift: 0px; background-image: url("assets/sky-b-1000.jpg"); background-attachment: scroll; background-position: 60% top; }
+  .home-main { min-height: calc(100svh - 70px); padding-bottom: 8vh; }
+  .home-row { flex-direction: column; align-items: center; gap: 26px; margin-top: 44px; }
+  .home-card { border-left: 0; padding: 0; }
   .proj:hover { padding-left: 0; }
   .projects-grid { grid-template-columns: 1fr; column-gap: 0; }
   .proj.is-featured { padding: 27px 0 31px; }
@@ -716,8 +779,6 @@ html[lang="zh-CN"] .single-content ol { letter-spacing: .01em; }
   .proj p, .proj.is-featured p { max-width: none; font-size: 15px; }
   .hero h1 { font-size: clamp(2.8rem, 13vw, 4.4rem); }
   .hero .tagline { max-width: 300px; margin-top: 20px; font-size: 16px; }
-  .home-section,
-  .contact { display: block; }
   .page-title { padding: 70px 0 39px; font-size: clamp(2.9rem, 14vw, 4.8rem); }
   .list-item.has-thumb { grid-template-columns: 1fr; gap: 19px; }
   .list-item.has-thumb .thumb { order: -1; width: min(100%, 430px); }
@@ -740,8 +801,6 @@ html[lang="zh-CN"] .single-content ol { letter-spacing: .01em; }
   nav .lang-switch { margin-left: auto; }
   .hero { padding-top: 72px; }
   .hero h1 { font-size: 3.1rem; }
-  .home-section,
-  .contact { display: block; }
   .list-item h3 { font-size: 25px; }
   .single-content pre { padding: 17px; font-size: 12px; }
   .runs { display: block; overflow-x: auto; }

@@ -8,9 +8,11 @@ Minimal personal website. Pure HTML + CSS, no build tools.
 luka-site/
 ├── index.html              ← Homepage (English)
 ├── style.css               ← All styles (Cormorant Garamond)
+├── field.js                ← Twinkling stars + meteors on the canvas (the only script on the site)
+├── assets/sky-b-*.jpg      ← Night-sky photo (Pexels licence, free for commercial use); 1920 for desktop, 1000 for phones
 ├── README.md
-├── posts/
-│   └── index.html          ← Posts list (empty for now)
+├── notes/
+│   └── index.html          ← Notes list (empty for now)
 ├── projects/
 │   ├── index.html          ← Projects list
 │   ├── localization-pipeline.html
@@ -19,7 +21,7 @@ luka-site/
 │   └── huka-run/           ← Playable game build (not mirrored)
 └── zh/                     ← Chinese mirror of every content page
     ├── index.html
-    ├── posts/index.html
+    ├── notes/index.html
     └── projects/
         ├── index.html
         ├── localization-pipeline.html
@@ -75,17 +77,17 @@ Go to your repo → **Settings** → **Pages** → set Source to:
 
 Click Save. Your site will be live at `https://yourusername.github.io` within a few minutes.
 
-## Adding a new post
+## Adding a new note
 
-1. Copy `projects/memoq-tag-transfer.html` → `posts/your-post-name.html` as a
+1. Copy `projects/memoq-tag-transfer.html` → `notes/your-note-name.html` as a
    starting skeleton (same header/nav/footer structure), or reuse any existing page
 2. Edit the title, date, reading time, and content
-3. Add a new entry in `posts/index.html`:
+3. Add a new entry in `notes/index.html`:
 
 ```html
 <div class="list-item">
   <div class="meta">June 2026 · 8 min read</div>
-  <h3><a href="your-post-name.html">Your Post Title</a></h3>
+  <h3><a href="your-note-name.html">Your Note Title</a></h3>
   <p>A short description.</p>
 </div>
 ```
@@ -94,13 +96,13 @@ Click Save. Your site will be live at `https://yourusername.github.io` within a 
 
 ```bash
 git add .
-git commit -m "Add new post: Your Post Title"
+git commit -m "Add new note: Your Note Title"
 git push
 ```
 
 ## Adding a new project
 
-Same as posts, but in the `projects/` folder. Project entries don't need a date.
+Same as notes, but in the `projects/` folder. Project entries don't need a date.
 
 ## Custom domain (optional)
 
@@ -116,7 +118,7 @@ Same as posts, but in the `projects/` folder. Project entries don't need a date.
 
 If you want Markdown-based writing and auto-generated list pages later, this structure maps cleanly to Hugo:
 
-- `posts/*.html` → `content/posts/*.md`
+- `notes/*.html` → `content/notes/*.md`
 - `projects/*.html` → `content/projects/*.md`
 - `style.css` → theme CSS
 
