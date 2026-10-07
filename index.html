@@ -7,6 +7,8 @@
   <link rel="stylesheet" href="style.css">
   <link rel="alternate" hreflang="zh-CN" href="https://lukalearnscode.github.io/zh/">
   <link rel="alternate" hreflang="en" href="https://lukalearnscode.github.io/">
+<script src="theme-init.js"></script>
+<link rel="stylesheet" href="preview.css">
 </head>
 <body class="home">
 
@@ -22,34 +24,35 @@
     </header>
 
     <main class="home-main">
-
-      <section class="hero">
-        <h1><span class="emoji">👋</span> Hi, I'm <span class="name">Luka</span></h1>
-        <p class="tagline">A Toolmaker, a Reader, and a Learner.</p>
-      </section>
-
-      <section class="home-row">
-        <a class="home-card" href="projects/index.html">
-          <svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect width="7" height="7" x="3" y="3" rx="1"/><rect width="7" height="7" x="14" y="3" rx="1"/><rect width="7" height="7" x="14" y="14" rx="1"/><rect width="7" height="7" x="3" y="14" rx="1"/></svg>
-          <span class="card-text"><span class="card-title">Projects</span><span class="card-desc">Things I've built or am building.</span></span>
-          <span class="card-arrow" aria-hidden="true"></span>
-        </a>
-        <a class="home-card" href="notes/index.html">
-          <svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/></svg>
-          <span class="card-text"><span class="card-title">Notes</span><span class="card-desc">Things I'm learning, reading, and thinking about.</span></span>
-          <span class="card-arrow" aria-hidden="true"></span>
-        </a>
-        <div class="home-card is-contact">
-          <svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
-          <span class="card-text"><span class="card-title">Find me</span><span class="card-links"><a href="https://github.com/Lukalearnscode">GitHub</a><span class="sep">·</span><a href="mailto:lucaschan1303117@gmail.com" title="lucaschan1303117@gmail.com">Email</a></span></span>
-        </div>
-      </section>
-
-    </main>
+<section class="stage">
+  <div class="intro"><p class="eyebrow">TOOLMAKER / READER / LEARNER</p>
+  <h1>Hi, I'm<br> <em>Luka.</em></h1>
+  <p class="tagline">A Toolmaker, a Reader, and a Learner.</p>
+  <a class="discover" href="projects/index.html">Explore my projects <span aria-hidden="true">↗</span></a></div>
+  <figure class="artwork" aria-label="Generative artwork"><canvas id="art" aria-hidden="true"></canvas><svg class="sketch" viewBox="0 0 600 500" fill="none" aria-hidden="true">
+  <g stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+  <path d="M90 374 Q183 347 292 398 Q389 344 507 360 L503 421 Q396 403 294 447 Q181 407 95 433 Z"/><path d="M87 376 L90 435 Q195 418 295 455 Q416 411 509 430 L513 368 M295 399 L294 445"/>
+  <path d="M129 382 Q200 373 260 401 M136 398 Q199 388 257 414 M324 400 Q403 371 468 378 M329 413 Q405 387 472 394"/>
+  <path d="M294 391 C321 345 255 284 297 216 C319 179 303 143 324 111 M295 321 C217 329 185 267 171 229 C240 220 294 242 295 321 M290 325 C248 293 221 268 173 230 M296 255 C366 268 424 223 441 184 C367 173 311 194 296 255 M298 252 Q361 215 439 186 M310 189 C252 178 232 126 241 80 C293 89 323 126 310 189 M310 188 Q278 143 242 81"/>
+  <path d="M319 116 C355 73 414 91 434 126 C388 148 343 157 319 116 M321 116 Q380 102 432 126"/>
+  <path d="M150 153 Q158 129 168 143 Q175 158 150 168 Q177 178 183 162 M452 287 Q462 262 472 281 M118 310 l-15 -13 m12 1 l-13 12 M386 61 l0 -18 m-8 10 l17 -2 M481 111 l14 -9 m-4 11 l-3 -17"/>
+  <ellipse cx="294" cy="254" rx="218" ry="178" stroke-dasharray="2 12" opacity=".22" transform="rotate(-19 294 254)"/>
+  
+  </g><text x="387" y="471" fill="currentColor" font-size="22" font-family="Bradley Hand, cursive" transform="rotate(-5 387 471)">keep growing</text></svg>
+  <div class="lomo" aria-hidden="true"></div><figcaption class="art-caption"></figcaption></figure>
+</section>
+<section class="home-links" aria-label="Explore">
+<a href="projects/index.html"><span class="link-num">01</span><span class="link-body"><strong>Projects</strong><small>Things I've built or am building.</small></span><span class="link-arrow">↗</span></a>
+<a href="notes/index.html"><span class="link-num">02</span><span class="link-body"><strong>Notes</strong><small>Things I'm learning, reading, and thinking about.</small></span><span class="link-arrow">↗</span></a>
+<div class="find"><span class="link-num">03</span><span class="link-body"><strong>Find me</strong><small><a href="https://github.com/Lukalearnscode">GitHub ↗</a><span> / </span><a href="mailto:lucaschan1303117@gmail.com">Email ↗</a></small></span></div>
+</section>
+<footer class="home-footer" aria-hidden="true"></footer>
+</main>
 
   </div>
 
-  <script src="field.js" defer></script>
+  <script src="mobius.js" defer></script>
+  <script src="art.js" defer></script>
 
 </body>
 </html>
