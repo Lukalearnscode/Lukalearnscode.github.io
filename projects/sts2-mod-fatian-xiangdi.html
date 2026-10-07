@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>A Card for the Ironclad — Luka</title>
+  <link rel="stylesheet" href="../style.css">
+  <link rel="alternate" hreflang="en" href="https://lukalearnscode.github.io/projects/sts2-mod-fatian-xiangdi.html">
+  <link rel="alternate" hreflang="zh-CN" href="https://lukalearnscode.github.io/zh/projects/sts2-mod-fatian-xiangdi.html">
+  <style>
+    /* Scoped to this page only. Global style.css untouched. Colours reuse the site palette variables. */
+    .note-meta { font-size: 0.9rem; color: var(--dim); margin-top: 0.4rem; }
+    .shot { margin: 1.6rem 0 1.9rem; }
+    .shot img { display: block; width: 100%; height: auto; border: 1px solid var(--border); border-radius: 3px; }
+    .shot figcaption { font-size: 0.88rem; color: var(--dim); margin-top: 0.5rem; line-height: 1.55; }
+    .trap { border: 1px solid var(--border); border-radius: 3px; padding: 1.05rem 1.2rem; margin: 1.3rem 0; background: rgba(0,0,0,0.02); }
+    .trap .trap-tag { font-size: 0.85rem; font-style: italic; color: var(--hover); }
+    .trap h4 { font-size: 1.1rem; font-weight: 700; margin: 0.15rem 0 0.5rem; }
+    .single-content .trap p { font-size: 0.97rem; line-height: 1.65; margin-bottom: 0.55rem; }
+    .single-content .trap p:last-child { margin-bottom: 0; }
+    .single-content .trap .fix { color: var(--dim); }
+    .runs { width: 100%; border-collapse: collapse; margin: 1.5rem 0 2rem; font-size: 0.95rem; }
+    .runs th, .runs td { text-align: left; padding: 0.6rem 0.7rem; border-bottom: 1px solid var(--border); vertical-align: top; line-height: 1.6; }
+    .runs th { font-weight: 700; color: var(--hover); font-size: 0.9rem; }
+    .runs td:first-child { color: var(--dim); white-space: nowrap; }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+
+    <header>
+      <nav>
+        <a href="../index.html" class="site-name">Luka</a>
+        <a href="index.html">Projects</a>
+        <a href="../notes/index.html">Notes</a>
+        <span class="lang-switch"><span class="current">EN</span> / <a href="../zh/projects/sts2-mod-fatian-xiangdi.html" lang="zh-CN">中文</a></span>
+      </nav>
+    </header>
+
+    <div class="single-header">
+      <h1>A Card for the Ironclad</h1>
+      <div class="note-meta">October 2026 · Slay the Spire 2 v0.111.0 · macOS</div>
+    </div>
+
+    <div class="single-content">
+
+      <p>The card is called Fa Tian Xiang Di, after a move in Chinese myth where a fighter calls up a giant form of himself. The Ironclad plays it and a red war god rises behind him. At the end of every turn after that, the war god throws one punch and every enemy loses 100 HP. It costs 1 energy.</p>
+
+      <figure class="shot">
+        <img src="fatian/hit.jpg" alt="The war god's punch lands and a 100 pops up over each of three enemies" width="1280" height="800">
+        <figcaption>The end-of-turn punch. Captured by the mod's own in-game test.</figcaption>
+      </figure>
+
+      <p>I don't write code. Claude wrote the code, and GPT painted the art that ended up in the game. My part came down to three things: saying what I wanted, playing it, and saying what looked wrong.</p>
+
+      <p>I first gave the animation to Codex. My verdict on what came back was that it "only just met my expectations", some way short of the impact I was after. Late on October 6 I handed everything to Claude. Once a first version was playable we went through nine more rounds of changes, and it was the morning of the 7th before we were done.</p>
+
+      <figure class="shot">
+        <img src="fatian/idle.jpg" alt="The war god standing idle behind the Ironclad" width="1280" height="800">
+        <figcaption>The final version, idle.</figcaption>
+      </figure>
+
+      <p>This page is about those nine rounds. There are already write-ups of the modding interface, so I won't repeat them. What I wanted to keep is something else: where a person who doesn't code actually gets stuck.</p>
+
+      <h2>What to do first</h2>
+
+      <p>Claude set the order. I'm copying it here as it was:</p>
+
+      <table class="runs">
+        <tr><th>Step</th><th>Done when</th></tr>
+        <tr><td>1</td><td>You know how the game finds a mod. In this version, it's three files in the game's mods folder</td></tr>
+        <tr><td>2</td><td>An empty mod that does nothing shows up as loaded in the game log, with no errors</td></tr>
+        <tr><td>3</td><td>The card and its damage work, with placeholder art</td></tr>
+        <tr><td>4</td><td>The animation art exists</td></tr>
+        <tr><td>5</td><td>Animation, position and sound are wired into the game</td></tr>
+        <tr><td>6</td><td>The game can test itself (more on this below)</td></tr>
+        <tr><td>7</td><td>I play it, complain, and it gets changed. Step 6 runs again after every round</td></tr>
+      </table>
+
+      <p>Step 2 looks like the dull one, but until it works nothing after it can be checked. Research and project setup took about 15% of the effort this time, including a very slow download of an older Godot. The game only accepts resource packs built with Godot 4.5.1 and rejects packs from newer versions.</p>
+
+      <p>The numbers, on the other hand, needed no planning. I changed the damage three times, from 8 to 30 to 80 to 100, and each change took a few minutes.</p>
+
+      <h2>What went wrong</h2>
+
+      <p>Ordered by how much time each one cost.</p>
+
+      <div class="trap">
+        <div class="trap-tag">Trap 01 · five rounds</div>
+        <h4>The war god came out dark and oversaturated</h4>
+        <p>In the game he was much darker than the source art, a red that was nearly black. Nothing reported an error and everything ran.</p>
+        <p>I said the colour was wrong. Claude ruled out texture compression, ruled out a few other things, and landed on a conclusion: the game was probably grading the whole screen. I asked twice more. On the third ask it finally tried something different. It drew a few swatches of known colour next to the war god, took a screenshot, and read the colours back off the screen.</p>
+        <p>The swatches hadn't changed at all, so the game wasn't doing it. The war god's colours were exactly the source colours multiplied by themselves. A few lines of tinting code Claude had written in round two were applying the same image's colour twice, so a red of 0.38 came out as 0.15.</p>
+        <figure class="shot">
+          <img src="fatian/color-before-after.jpg" alt="The same war god twice: nearly black on the left, the source colours on the right" width="1280" height="680">
+          <figcaption>Wrong on the left, fixed on the right. Same art in both.</figcaption>
+        </figure>
+        <p class="fix"><strong>What changed:</strong> Claude wrote a line to itself in its notes afterwards: "When the user says the colour is wrong, measure the pixels on screen first. Don't guess first."</p>
+      </div>
+
+      <div class="trap">
+        <div class="trap-tag">Trap 02</div>
+        <h4>It said it was changed, and it wasn't</h4>
+        <p>In round two Claude reported that it had "removed the brightening at the one-second mark". In round four we found that the change had never taken effect.</p>
+        <p>The same animation code lived in two places: a standalone file, and a copy embedded in the web page used for exporting frames. It had edited the first. The export read the second.</p>
+        <p class="fix"><strong>What changed:</strong> before reporting "changed", confirm it in the file that actually goes into the game, not only in the source file that was edited.</p>
+      </div>
+
+      <div class="trap">
+        <div class="trap-tag">Trap 03</div>
+        <h4>The art style didn't match the game</h4>
+        <p>The first war god was painted in a realistic, heavily rendered style. Slay the Spire 2 is flat colour with thick outlines. With both on one screen, anyone could see the war god didn't belong to this game.</p>
+        <figure class="shot">
+          <img src="fatian/old-art.jpg" alt="The first, realistic war god next to the game's flat-coloured characters" width="1280" height="800">
+          <figcaption>The first art style. This shot also has the colour bug from Trap 01, which is why it's so dark.</figcaption>
+        </figure>
+        <p>I sent GPT a screenshot of the game and had it repaint the war god one part at a time: eight body parts and a tail of flame. The line in the prompt that mattered most was to change only how it was painted, and leave the position, size and outline of every part alone. That way the skeleton and the motion didn't need redoing. GPT still nudged parts around on the quiet, so Claude wrote a script to fit the new art back onto the old positions.</p>
+        <p class="fix"><strong>What changed:</strong> take a screenshot of a real fight before looking for any art, and set the style from that.</p>
+      </div>
+
+      <div class="trap">
+        <div class="trap-tag">Trap 04</div>
+        <h4>The image was blurry</h4>
+        <p>Two causes. The animation frames were exported at 0.6 scale, while the game runs 2560 pixels wide on my screen, so each image pixel was stretched over more than two screen pixels. And the source art had nine parts packed into one sheet, about 400 pixels each.</p>
+        <p>Setting the scale back to 1.0 made it sharp. The cost was that the mod's resource pack grew from 136MB to 377MB.</p>
+        <p class="fix"><strong>What changed:</strong> check the game's real resolution on your own screen at the start, and size the art to that.</p>
+      </div>
+
+      <div class="trap">
+        <div class="trap-tag">Trap 05</div>
+        <h4>Dealing cards didn't feel smooth</h4>
+        <p>The next day I noticed that with the mod on, the cards came out a little slowly each turn. The unmodded game was smooth. I asked Claude whether the mod was slowing the game down.</p>
+        <p>Claude measured frame rate over 24 turns first. With or without the war god it held a steady 60 frames a second, and nothing looked wrong. The real cause turned up later. When the game runs with mods it switches to a separate set of save files, the settings in that set start from defaults, and Fast Mode was off. In my normal game each card takes 0.1 seconds to fly out. Here it took 0.25.</p>
+        <p class="fix"><strong>What changed:</strong> the launch script now copies my normal settings across when the modded save set has none. This had nothing to do with performance, but I'd described it as "stutter", so frame rate is where it looked first.</p>
+      </div>
+
+      <div class="trap">
+        <div class="trap-tag">Trap 06</div>
+        <h4>30 damage, and the enemy lost 9</h4>
+        <p>The test enemy was a beetle. The beetle has an ability that caps each hit at 9 HP.</p>
+        <p class="fix"><strong>What changed:</strong> test numbers on an enemy with no special abilities.</p>
+      </div>
+
+      <h2>Letting the game test itself</h2>
+
+      <p>Claude can't see my screen or hear my speakers. So it added a piece of test code to the mod that stays off in normal play. Drop a marker file in place and the game starts a run on its own, enters a fight, plays the card from the hand, ends the turn, takes screenshots and records audio from inside the game, writes how much HP each enemy lost to the log, and quits.</p>
+
+      <p>The colour bug, a flicker when the war god first appeared, and the damage numbers were all caught this way. By Claude's own estimate this part was about a tenth of the effort, and every round afterwards relied on it.</p>
+
+      <p>One detail worth keeping: the test has to play the real card from the hand. In the first round it used the debug console to attach the effect straight to the character, and that missed the flicker, because the two routes run through different code.</p>
+
+      <h2>If I did it again</h2>
+
+      <p>The nine rounds of changes were roughly 35% of all the effort. Looking back, Claude said that if the art style, the sharpness and where the war god stands had been settled against a game screenshot before starting, at least four of those rounds wouldn't have happened.</p>
+
+      <p>So next time I'll do one thing first: take a screenshot of the character in a fight, mark on it how big the new thing is, where it stands and what it looks like, and only then ask anyone to paint.</p>
+
+      <p>The other one is mine. With the colour, the first time I said "that's wrong" I didn't ask how it knew its answer. Next time it says "probably", I'll ask whether it measured.</p>
+
+      <h2>A few notes</h2>
+
+      <p>This is how it worked in October 2026 on v0.111.0. The game is still being updated and the interface may change. A few months from now the specific steps above may no longer line up.</p>
+
+      <p>The sounds are CC0 recordings from BigSoundBank, recorded by Joseph Sardin, with some synthesised low end added.</p>
+
+      <p>The source isn't public yet. I'm still cleaning out the parts that are tied to my own computer. When that's done it will go on GitHub and I'll add the link here.</p>
+
+    </div>
+
+    <footer>
+      <p>Luka</p>
+    </footer>
+
+  </div>
+
+  <script src="../field.js" defer></script>
+
+</body>
+</html>
