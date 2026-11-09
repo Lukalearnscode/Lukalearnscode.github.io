@@ -10,7 +10,7 @@
   else{key=ss.get('style');refine=ss.get('refine')}
   const pick=(name,valid,fallback)=>{const v=q.get(name);if(valid.includes(v))ss.set(name,v);const s=ss.get(name);return valid.includes(s)?s:fallback};
   const art=pick('art',arts,'mobius'),type=pick('type',types,'optima');
-  const desk=pick('desk',desks,'sage'),grain=pick('grain',grains,'on');
+  const desk=pick('desk',desks,'slate'),grain=pick('grain',grains,'on');
   if(!keys.includes(key)){key='morph';refine='2'}
   const root=document.documentElement;
   const motion=pick('motion',['on','off'],null);if(motion)root.dataset.motion=motion;
