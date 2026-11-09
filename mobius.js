@@ -2,9 +2,18 @@
 (()=>{
 'use strict';
 const stanceFromUrl=new URLSearchParams(location.search).get('stance');
+// Colours can be overridden per style with CSS custom properties (--mobius-bg etc.); defaults are the live design.
+let paletteCache=null;
+function mobiusPalette(){
+  const style=document.documentElement.dataset.style||'';
+  if(paletteCache&&paletteCache.style===style)return paletteCache;
+  const cs=getComputedStyle(document.documentElement),v=(n,d)=>(cs.getPropertyValue('--mobius-'+n).trim()||d);
+  paletteCache={style,bg:v('bg','#f4f3ee'),ink:v('ink','#3f4b66'),edge:v('edge','#6c7890'),lane:v('lane','#cfd2d6'),far:v('far','#8d97ab'),scarf:v('scarf','#b98868')};
+  return paletteCache;
+}
 window.drawMobiusScene = function(ctx,w,h,t) {
   ctx.clearRect(0,0,w,h);
-  const scale=Math.min(w*.36,h*.5), bg='#f4f3ee', ink='#3f4b66', edge='#6c7890', lane='#cfd2d6', far='#8d97ab', items=[];
+  const scale=Math.min(w*.36,h*.5), pal=mobiusPalette(), bg=pal.bg, ink=pal.ink, edge=pal.edge, lane=pal.lane, far=pal.far, items=[];
   const add=(a,b)=>a.map((v,i)=>v+b[i]), mul=(a,k)=>a.map(v=>v*k);
   const unit=a=>mul(a,1/Math.max(1e-8,Math.hypot(...a)));
   const cross=(a,b)=>[a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0]];
@@ -126,7 +135,7 @@ window.drawMobiusScene = function(ctx,w,h,t) {
     ctx.lineCap='round';ctx.lineJoin='round';
     line(limbs[0].arm,far);line(limbs[0].leg,far);
     const s=scarf.map(place);ctx.beginPath();ctx.moveTo(s[0][0],s[0][1]);ctx.quadraticCurveTo(s[1][0],s[1][1],s[2][0],s[2][1]);
-    ctx.strokeStyle='#b98868';ctx.lineWidth=1.5*k;ctx.stroke();
+    ctx.strokeStyle=pal.scarf;ctx.lineWidth=1.5*k;ctx.stroke();
     line([hip,shoulder],ink);line(limbs[1].leg,ink);line(limbs[1].arm,ink);
     const c=place(head);ctx.beginPath();ctx.arc(c[0],c[1],3.2*k,0,TAU);ctx.fillStyle=bg;ctx.fill();ctx.strokeStyle=ink;ctx.lineWidth=1.5*k;ctx.stroke();
   }});

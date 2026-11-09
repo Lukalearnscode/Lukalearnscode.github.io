@@ -64,3 +64,5 @@ html[lang='en'][data-refine] .intro h1 em{margin-left:0}
 /* zh desktop: keep the tagline right under the artwork, as on the English page */
 @media(min-width:701px){html[lang='zh-CN'][data-refine='2'] .intro .tagline{margin-top:201px}}
 @media(min-width:701px) and (max-height:800px){html[lang='zh-CN'][data-refine='2'] .intro .tagline{margin-top:196px}}
+/* D + paper grain (2026-11-09): a faint grey tooth over the flat background; ?grain=off turns it off. */
+[data-style='morph'][data-grain='on'] body::before{display:block;position:fixed;inset:0;z-index:0;pointer-events:none;content:'';opacity:1;mix-blend-mode:multiply;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix type='saturate' values='0'/></filter><rect width='100%' height='100%' filter='url(%23n)' opacity='.16'/></svg>")}

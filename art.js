@@ -8,13 +8,13 @@ if(refined){const icons=['<rect x="3" y="3" width="8" height="8" rx="1"/><rect x
 const captions={ascii:'FIG. 01 / A SMALL WORLD, MADE OF CHARACTERS',sketch:'A FEW LINES. SOMETHING NEW.',impression:'LIGHT STUDY / SKY, WATER, MEMORY',morph:'FORM STUDY / ALWAYS BECOMING'};
 const notes={ascii:'small tools. open possibilities.',sketch:'make. read. learn.',impression:'a place for things in progress.',morph:'built with curiosity.'};
 const caption=document.querySelector('.art-caption'),footer=document.querySelector('.footer-note');
-if(caption)caption.textContent=captions[style];if(footer)footer.textContent=notes[style];
+if(caption)caption.textContent=captions[style]||'';if(footer)footer.textContent=notes[style]||'';
 const cv=document.getElementById('art');if(!cv||style==='sketch')return;
 const ctx=cv.getContext('2d');if(!ctx)return;
 const forceMotion=refined&&motif==='mobius'&&document.documentElement.dataset.motion==='on',paused=refined&&motif==='mobius'&&document.documentElement.dataset.motion==='off';
 const reduced=matchMedia('(prefers-reduced-motion: reduce)');let w=0,h=0,raf=0,last=0,visible=true,phase=4.5;
 let seed=143;function rand(){seed=(seed*1664525+1013904223)>>>0;return seed/4294967296;}
-function fit(){const box=cv.getBoundingClientRect();w=box.width;h=box.height;if(!w||!h)return;const dpr=Math.min(devicePixelRatio||1,motif==='mobius'?3:1.5);cv.width=Math.round(w*dpr);cv.height=Math.round(h*dpr);ctx.setTransform(dpr,0,0,dpr,0,0);draw(phase);}
+function fit(){const box=cv.getBoundingClientRect();w=box.width;h=box.height;if(!w||!h)return;const dpr=Math.min(devicePixelRatio||1,(motif==='mobius'||style==='notebook')?3:1.5);cv.width=Math.round(w*dpr);cv.height=Math.round(h*dpr);ctx.setTransform(dpr,0,0,dpr,0,0);draw(phase);}
 function ascii(t){
   ctx.clearRect(0,0,w,h);const cols=78,rows=Math.round(h/w*cols*.7),cw=w/cols,ch=h/rows;
   const grid=new Float32Array(cols*rows).fill(-100),light=new Float32Array(cols*rows);const a=.7+Math.sin(t*.2)*.12,b=t*.16,ca=Math.cos(a),sa=Math.sin(a),cb=Math.cos(b),sb=Math.sin(b);
@@ -78,8 +78,8 @@ function impression(){
   ctx.globalAlpha=.3;ctx.fillStyle='#f8d1a0';for(let i=0;i<180;i++){let y=336+rand()*160,x=415+(rand()-.5)*(30+(y-330)*.55);ctx.fillRect(x,y,rand()*28+5,1.8);}
   ctx.globalAlpha=1;ctx.restore();
 }
-function draw(t){if(style==='ascii')ascii(t);else if(style==='morph'){if(refined){if(motif==='mobius')mobius(t);else if(motif==='fold')fold(t);else if(motif==='petal')petal(t);else orbit(t)}else morph(t)}else impression();}
-function tick(now){raf=0;if(document.hidden||!visible||(reduced.matches&&!forceMotion)||paused||style==='impression')return;if(now-last>=1000/(motif==='mobius'?30:12)){phase+=Math.min((now-last)/1000,.15);last=now;draw(phase)}raf=requestAnimationFrame(tick);}
+function draw(t){if(style==='notebook'){mobius(t);return}if(style==='ascii')ascii(t);else if(style==='morph'){if(refined){if(motif==='mobius')mobius(t);else if(motif==='fold')fold(t);else if(motif==='petal')petal(t);else orbit(t)}else morph(t)}else impression();}
+function tick(now){raf=0;if(document.hidden||!visible||(reduced.matches&&!forceMotion)||paused||style==='impression')return;if(now-last>=1000/((motif==='mobius'||style==='notebook')?30:12)){phase+=Math.min((now-last)/1000,.15);last=now;draw(phase)}raf=requestAnimationFrame(tick);}
 function sync(){if(raf)cancelAnimationFrame(raf);raf=0;if(!document.hidden&&visible&&(!reduced.matches||forceMotion)&&!paused&&style!=='impression'){last=performance.now();raf=requestAnimationFrame(tick);}}
 new ResizeObserver(fit).observe(cv);new IntersectionObserver(entries=>{visible=entries[0].isIntersecting;sync()},{threshold:0}).observe(cv);document.addEventListener('visibilitychange',sync);reduced.addEventListener('change',()=>{draw(phase);sync()});fit();sync();
 })();
