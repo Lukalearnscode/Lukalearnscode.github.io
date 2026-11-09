@@ -126,10 +126,11 @@ If you want Markdown-based writing and auto-generated list pages later, this str
 
 Project thumbnails live in `projects/thumbs/` and are shared by both language trees (the Chinese tree references them as `../../projects/thumbs/...`). The two SVGs are hand-drawn monochrome line art in the site's accent colour; `huka-run.jpg` is a captured game frame. Add a thumbnail by giving the entry `class="list-item has-thumb"`, wrapping the text in `<div class="entry">`, and appending a `<figure class="thumb">`; photos take `class="photo"` on the `<img>`.
 
-## Notebook style (branch `notebook-preview`, 2026-11-09, not live)
+## Notebook style (live default since 2026-11-09)
 
 `?style=notebook` turns the whole site into paper on a desk: spiral-bound home page, index cards
-for projects, loose-leaf sheets for articles. Desk colour: `&desk=sage|slate|kraft`.
+for projects, loose-leaf sheets for articles. Defaults: slate desk, aged paper. Desk: `&desk=sage|slate|kraft`; paper: `&paper=white|ivory|aged|grey`.
+The previous Optima + Möbius design: `?style=morph&refine=2`.
 Files: `notebook.css` (all rules scoped to `[data-style='notebook']`), `notebook.js` (seeded
 pen strokes drawn as SVG: underlines, outlines, circled numbers, the home-page note; it also wraps
 content pages in a `.nb-sheet` / `.nb-desk` div). `theme-init.js` loads both only when chosen.

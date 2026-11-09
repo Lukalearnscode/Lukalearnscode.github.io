@@ -1,5 +1,6 @@
 (()=>{
-  // Picks the site style before first paint. Defaults are the live design (morph / refine 2 / mobius / optima).
+  // Picks the site style before first paint. Live default since 2026-11-09: notebook, slate desk, aged paper.
+  // The earlier designs stay reachable: ?style=morph&refine=2 is the Optima + Möbius version that was live before.
   // URL parameters (?style= &refine= &art= &type= &motion= &desk= &grain=) are remembered for the tab in sessionStorage.
   const keys=['ascii','sketch','impression','morph','notebook'],q=new URLSearchParams(location.search);
   const arts=['orbit','fold','petal','mobius'],types=['clean','serif','original','helvetica','avenir','gill','optima','trebuchet'];
@@ -10,8 +11,8 @@
   else{key=ss.get('style');refine=ss.get('refine')}
   const pick=(name,valid,fallback)=>{const v=q.get(name);if(valid.includes(v))ss.set(name,v);const s=ss.get(name);return valid.includes(s)?s:fallback};
   const art=pick('art',arts,'mobius'),type=pick('type',types,'optima');
-  const desk=pick('desk',desks,'slate'),grain=pick('grain',grains,'on'),paper=pick('paper',papers,'ivory');
-  if(!keys.includes(key)){key='morph';refine='2'}
+  const desk=pick('desk',desks,'slate'),grain=pick('grain',grains,'on'),paper=pick('paper',papers,'aged');
+  if(!keys.includes(key)){key='notebook';refine='0'}
   const root=document.documentElement;
   const motion=pick('motion',['on','off'],null);if(motion)root.dataset.motion=motion;
   root.dataset.style=key;
