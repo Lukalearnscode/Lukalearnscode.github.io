@@ -106,20 +106,6 @@ function markCurrentNav(){
     if(here===p||(here.startsWith(p)&&p.endsWith('/projects/')))a.setAttribute('aria-current','page');
   });
 }
-function homeNotes(){
-  const art=document.querySelector('.artwork');if(!art)return;
-  const note=document.createElement('div');note.className='nb-note';note.setAttribute('aria-hidden','true');
-  note.innerHTML=`<span>${zh?'一圈一圈，一直在跑':'still running, lap after lap'}</span>`;
-  art.appendChild(note);
-  layer(note,(w,h,r)=>{ // a curved arrow from the note up toward the ribbon
-    const pts=[],x0=w*.5,y0=-6,x1=w*.66,y1=-74;for(let i=0;i<=24;i++){const t=i/24;pts.push([x0+(x1-x0)*t-Math.sin(t*Math.PI)*22,y0+(y1-y0)*t])}
-    const e=pts[pts.length-1],p=pts[pts.length-4],ang=Math.atan2(e[1]-p[1],e[0]-p[0]);
-    const head=s=>[[e[0]-Math.cos(ang+s)*11,e[1]-Math.sin(ang+s)*11],[e[0],e[1]]];
-    return path(stroke(pts,1.9,r,{taper:.15}))+path(stroke(head(.5),1.8,r,{taper:.3}))+path(stroke(head(-.5),1.8,r,{taper:.3}));
-  },'nb-arrow');
-  const svg=note.querySelector('.nb-arrow');if(svg){svg.style.overflow='visible'}
-}
-
 function decorate(){
   wrapSheet();markCurrentNav();
   // the name in the greeting gets a red-pen underline
@@ -134,7 +120,6 @@ function decorate(){
   document.querySelectorAll('.discover,.back-link').forEach(b=>box(b,{width:1.8,corner:9}));
   document.querySelectorAll('.proj .meta,.list-item .meta').forEach(m=>box(m,{width:1.3,corner:4,pad:1.5,cls:'nb-box nb-stamp'}));
   document.querySelectorAll('.flow-num,.phase-num,.step-num').forEach(ring);
-  homeNotes();
   // card page numbers: "1 / 6"
   const cards=[...document.querySelectorAll('.projects-grid .proj')];
   cards.forEach((c,i)=>{const f=document.createElement('span');f.className='nb-folio';f.setAttribute('aria-hidden','true');f.textContent=`${i+1} / ${cards.length}`;c.appendChild(f)});

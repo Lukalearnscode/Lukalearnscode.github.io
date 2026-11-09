@@ -33,6 +33,11 @@
 html[lang='zh-CN'][data-style='notebook'][data-style]{--hand:'LXGW WenKai Screen','Kevin Sans','Kaiti SC','STKaiti',cursive}
 html[lang='zh-CN'][data-style='notebook'][data-style] nav .site-name,html[lang='zh-CN'][data-style='notebook'][data-style] nav a[lang]{font-family:'Kevin Sans',cursive}
 
+/* paper tone (?paper=): white is the first version; the others are softer against a dark desk */
+[data-style='notebook'][data-style][data-paper='ivory']{--paper:#eeeadf;--paper-2:#e7e2d4;--card:#f1ede3;--mobius-lane:#d3cdbd}
+[data-style='notebook'][data-style][data-paper='aged']{--paper:#e9e1cf;--paper-2:#e1d8c4;--card:#ece5d5;--mobius-lane:#d0c6b0;--rule:rgba(72,100,160,.22)}
+[data-style='notebook'][data-style][data-paper='grey']{--paper:#e5e4de;--paper-2:#dddcd5;--card:#e9e8e2;--mobius-lane:#cfcdc5;--rule:rgba(72,100,160,.22)}
+
 /* ---------- desk ---------- */
 html[data-style='notebook'][data-style]{background:var(--cloth),radial-gradient(120% 90% at 50% 0%,transparent 55%,rgba(0,0,0,.12)),var(--desk);background-attachment:fixed}
 [data-style='notebook'][data-style] body{background-color:transparent;color:var(--ink);font-family:var(--hand);line-height:1.7;-webkit-font-smoothing:antialiased}
@@ -83,7 +88,6 @@ html[data-style='notebook'][data-style]{background:var(--cloth),radial-gradient(
 [data-style='notebook'][data-style] .discover:hover{background-color:rgba(252,224,96,.35)}
 [data-style='notebook'][data-style] .artwork{position:relative;margin:0;width:100%;height:auto;aspect-ratio:1.12;top:auto;left:auto;transform:none}
 [data-style='notebook'][data-style] .art-caption,[data-style='notebook'][data-style] .sketch,[data-style='notebook'][data-style] .lomo,[data-style='notebook'][data-style] .home-footer{display:none}
-[data-style='notebook'][data-style] .nb-note{position:absolute;left:8%;bottom:3%;font:400 19px/1.2 var(--hand);color:var(--pen-red);transform:rotate(-4deg);white-space:nowrap}
 
 /* the three ways in: index cards taped to the desk */
 [data-style='notebook'][data-style] .home-links{display:grid;grid-template-columns:repeat(3,1fr);gap:34px;max-width:1080px;margin:58px auto 0;border:0}
@@ -171,7 +175,7 @@ html[data-style='notebook'][data-style]{background:var(--cloth),radial-gradient(
 [data-style='notebook'][data-style] .single-content pre::before{content:'';position:absolute;top:-11px;left:26px;width:78px;height:22px;background:var(--tape);border:1px solid var(--tape-edge);transform:rotate(-3deg)}
 [data-style='notebook'][data-style] .single-content img{border:0;border-radius:0}
 /* screenshots: prints taped onto the page */
-[data-style='notebook'][data-style] .shot{position:relative;margin:2.2em 6px 2.4em;padding:11px 11px 14px;background:#fff;box-shadow:var(--lift);transform:rotate(-.5deg)}
+[data-style='notebook'][data-style] .shot{position:relative;margin:2.2em 6px 2.4em;padding:11px 11px 14px;background:var(--card);box-shadow:var(--lift);transform:rotate(-.5deg)}
 [data-style='notebook'][data-style] .shot:nth-of-type(even){transform:rotate(.55deg)}
 [data-style='notebook'][data-style] .shot img{border:0!important;border-radius:0!important}
 [data-style='notebook'][data-style] .shot::before{content:'';position:absolute;top:-12px;left:calc(50% - 45px);width:90px;height:24px;background:var(--tape);border:1px solid var(--tape-edge);transform:rotate(2deg);z-index:1}
@@ -244,8 +248,7 @@ html[data-style='notebook'][data-style]{background:var(--cloth),radial-gradient(
   [data-style='notebook'][data-style] .intro .tagline{font-size:19px}
   [data-style='notebook'][data-style] .discover{margin-top:28px}
   [data-style='notebook'][data-style] .artwork{height:290px;aspect-ratio:auto;margin:14px 0 6px}
-  [data-style='notebook'][data-style] .nb-note{font-size:16px;left:2%;bottom:0}
-  [data-style='notebook'][data-style] .home-links{grid-template-columns:1fr;gap:30px;margin-top:42px}
+    [data-style='notebook'][data-style] .home-links{grid-template-columns:1fr;gap:30px;margin-top:42px}
   [data-style='notebook'][data-style] .home-links>a,[data-style='notebook'][data-style] .home-links>.find{padding:26px 24px 22px!important;border-top:0!important}
   [data-style='notebook'][data-style] .home-links>:nth-child(2){transform:rotate(.5deg)}
   [data-style='notebook'][data-style] .page-title{padding-top:40px;margin-bottom:30px;font-size:50px}
