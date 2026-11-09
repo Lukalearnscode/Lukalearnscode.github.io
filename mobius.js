@@ -8,7 +8,7 @@ function mobiusPalette(){
   const style=document.documentElement.dataset.style||'';
   if(paletteCache&&paletteCache.style===style)return paletteCache;
   const cs=getComputedStyle(document.documentElement),v=(n,d)=>(cs.getPropertyValue('--mobius-'+n).trim()||d);
-  paletteCache={style,bg:v('bg','#f4f3ee'),ink:v('ink','#3f4b66'),edge:v('edge','#6c7890'),lane:v('lane','#cfd2d6'),far:v('far','#8d97ab'),scarf:v('scarf','#b98868')};
+  paletteCache={style,bg:v('bg','#f4f3ee'),ink:v('ink','#3f4b66'),edge:v('edge','#6c7890'),lane:v('lane','#cfd2d6'),far:v('far','#8d97ab'),scarf:v('scarf','#b98868'),seal:v('seal','')==='1'};
   return paletteCache;
 }
 window.drawMobiusScene = function(ctx,w,h,t) {
@@ -41,7 +41,7 @@ window.drawMobiusScene = function(ctx,w,h,t) {
     const u=i/160*Math.PI*2,next=(i+1)/160*Math.PI*2;
     const p=[surface(u,-halfWidth),surface(u,halfWidth),surface(next,halfWidth),surface(next,-halfWidth)].map(project);
     items.push({z:p.reduce((s,v)=>s+v[2],0)/4,draw(){
-      path(p);ctx.closePath();ctx.fillStyle=bg;ctx.fill();
+      path(p);ctx.closePath();ctx.fillStyle=bg;ctx.fill();if(pal.seal){ctx.strokeStyle=bg;ctx.lineWidth=1;ctx.stroke()} // seal: hide hairline seams between quads on textured paper
       ctx.lineCap='round';ctx.strokeStyle=lane;ctx.lineWidth=.7;
       path([project(center(u)),project(center(next))]);ctx.stroke();
       ctx.strokeStyle=edge;ctx.lineWidth=1.15;
